@@ -18,7 +18,7 @@ namespace Chess
 
 		string lower(const string& toConvert)
 		{
-			string toReturn(toConvert);
+			string toReturn { toConvert };
 			for (auto cur = toReturn.begin(); cur != toReturn.end(); cur++)
 				*cur = tolower(*cur);
 			return toReturn;
