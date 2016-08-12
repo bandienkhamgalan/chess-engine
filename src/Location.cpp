@@ -30,9 +30,9 @@ algebraicLocation Location::fromString(const string& toConvert)
 
 string Location::toString() const
 {
-	char column = 'A' + (location % 8) - 1;
+	char column = 'A' + (location - 1) % 8;
 	char row = '1' + (location - 1) / 8;
-	return { column, row, '\0' };
+	return { column, row };
 }
 
 ostream& operator<<(ostream& output, const Location& location)
