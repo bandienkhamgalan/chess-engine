@@ -3,7 +3,7 @@
 #include "Helpers.h"
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_SUITE(Helpers_Test)
+BOOST_AUTO_TEST_SUITE(Helpers_)
 
 	BOOST_AUTO_TEST_SUITE(Helpers_trimmed)
 

@@ -4,25 +4,33 @@
 using namespace std;
 using namespace Chess;
 
-Board::Board(const vector<shared_ptr<Piece>>& pieces) : Board()
-{
-	AddPieces(pieces);
-}
-
 /* Private Methods */
 
-Square& Board::operator[](const Location& location) const
+ISquare& Board::operator[](const Location& location) const
 {
-	return *(squares[(int)location]);
+	return *(squares[(int)location - (int)algebraicLocation::a1]);
 }
 
 /* Public Methods */
 
-Board::Board()
+Board::Board(ISquareFactory& squareFactory)
 {
-	for (auto current = (int) algebraicLocation::a1; current < (int) algebraicLocation::MAX; current++)
-		squares.emplace_back(new Square(Location((algebraicLocation) current)));
+	int currentSquareIndex = 0;
+	int currentLocationIndex = (int) algebraicLocation::a1;
+	while ( currentSquareIndex < 64 )
+	{
+		Location currentLocation { (algebraicLocation)currentLocationIndex };
+		squares[currentSquareIndex] = std::move(squareFactory.makeSquare(currentLocation));
+		++currentSquareIndex;
+		++currentLocationIndex;
+	}
 }
+
+Board::Board(ISquareFactory& squareFactory, const vector<shared_ptr<Piece>>& pieces) : Board(squareFactory)
+{
+	AddPieces(pieces);
+}
+
 
 bool Board::HasPieceAtLocation(const Location& location) const
 {
@@ -52,4 +60,4 @@ void Board::AddPiece(shared_ptr<Piece> piece)
 
 	(*this)[pieceLocation].AssignPiece(piece);
 	pieces.emplace_back(piece);
-};
+}

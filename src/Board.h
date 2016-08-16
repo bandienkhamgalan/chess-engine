@@ -2,7 +2,8 @@
 
 #include <vector>
 #include <memory>
-#include "Square.h"
+#include "ISquareFactory.h"
+#include "ISquare.h"
 #include "Location.h"
 #include "Piece.h"
 
@@ -12,14 +13,15 @@ namespace Chess
 	{
 	private:
 		std::vector<std::shared_ptr<Piece>> pieces;
-		std::vector<std::shared_ptr<Square>> squares;
-		Square& operator[](const Location& location) const;
+		std::array<std::unique_ptr<ISquare>, 64> squares;
+		ISquare& operator[](const Location& location) const;
 
 	public:
 		bool HasPieceAtLocation(const Location& location) const;
 		Piece& GetPieceAtLocation(const Location& location) const;
-		Board();
-		Board(const std::vector<std::shared_ptr<Piece>>& pieces);
+		Board() = delete;
+		Board(ISquareFactory& squareFactory);
+		Board(ISquareFactory& squareFactory, const std::vector<std::shared_ptr<Piece>>& pieces);
 		void AddPieces(const std::vector<std::shared_ptr<Piece>>& pieces);
 		void AddPiece(std::shared_ptr<Piece> piece);
 	};

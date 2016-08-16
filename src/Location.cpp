@@ -45,3 +45,8 @@ Location::operator int() const
 {
 	return (int)location;
 }
+
+bool Location::operator <(const Location& toCompare) const
+{
+	return (int)location < (int)toCompare;
+}

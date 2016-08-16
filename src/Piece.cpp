@@ -1,32 +1,41 @@
 #include <stdexcept>
 #include "Piece.h"
 
-using namespace Chess;
 using namespace std;
 
-const Location& Piece::GetLocation() const
+namespace Chess
 {
-	if (!IsInPlay())
-		throw runtime_error("Piece::GetLocation : location was null");
-	return *location;
-}
+	/* Constructors */
 
-bool Piece::IsInPlay() const
-{
-	return inPlay;
-}
-
-void Piece::SetLocation(std::shared_ptr<Location> newLocation)
-{
-	if (location)
+	Piece::Piece(const Location& location)
 	{
-		inPlay = true;
-		location = newLocation;
+		this->location = make_shared<Location>(location);
 	}
-}
 
-void Piece::RemoveFromPlay()
-{
-	location = nullptr;
-	inPlay = false;
+	/* Public methods */
+
+	const Location& Piece::GetLocation() const
+	{
+		if (!IsInPlay())
+			throw runtime_error("Piece::GetLocation : location was null");
+		return *location;
+	}
+
+	bool Piece::IsInPlay() const
+	{
+		return (bool)location;
+	}
+
+	void Piece::SetLocation(std::shared_ptr<Location> newLocation)
+	{
+		if (location)
+		{
+			location = newLocation;
+		}
+	}
+
+	void Piece::RemoveFromPlay()
+	{
+		location = nullptr;
+	}
 }

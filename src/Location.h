@@ -30,6 +30,7 @@ namespace Chess
 		Location(const std::string& location);
 		operator int() const;
 		std::string toString() const;
+		bool operator <(const Location& toCompare) const;
 	};
 
 	std::ostream& operator<<(std::ostream& output, const Location& location);
