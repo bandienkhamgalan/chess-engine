@@ -8,7 +8,7 @@ using namespace Chess;
 
 ISquare& Board::operator[](const Location& location) const
 {
-	return *(squares[(int)location - (int)algebraicLocation::a1]);
+	return *(squares[static_cast<int>(location) - static_cast<int>(Location::a1)]);
 }
 
 /* Public Methods */
@@ -16,14 +16,10 @@ ISquare& Board::operator[](const Location& location) const
 Board::Board(ISquareFactory& squareFactory)
 {
 	int currentSquareIndex = 0;
-	int currentLocationIndex = (int) algebraicLocation::a1;
-	while ( currentSquareIndex < 64 )
-	{
-		Location currentLocation { (algebraicLocation)currentLocationIndex };
-		squares[currentSquareIndex] = std::move(squareFactory.makeSquare(currentLocation));
-		++currentSquareIndex;
-		++currentLocationIndex;
-	}
+	Location::for_each( [&](Location currentLocation)
+		{
+			squares[currentSquareIndex++] = std::move(squareFactory.makeSquare(currentLocation));
+		});
 }
 
 Board::Board(ISquareFactory& squareFactory, const vector<shared_ptr<Piece>>& pieces) : Board(squareFactory)
