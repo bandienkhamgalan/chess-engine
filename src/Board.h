@@ -12,7 +12,6 @@ namespace Chess
 	class Board
 	{
 	private:
-		std::vector<std::shared_ptr<Piece>> pieces;
 		std::array<std::unique_ptr<ISquare>, 64> squares;
 		ISquare& operator[](const Location& location) const;
 

@@ -6,8 +6,8 @@ default: release
 release: src/main.cpp
 	@$(CC) $(CCFLAGS) -o Chess $<
 
-SUTs := Helpers Location Board
-SUT_OBJS := $(addprefix obj/, $(addsuffix .o, $(SUTs) SimpleSquare Piece))
+SUTs := Helpers Location Board Piece
+SUT_OBJS := $(addprefix obj/, $(addsuffix .o, $(SUTs) SimpleSquare))
 TEST_OBJS := obj/test/TestMain.o $(addprefix obj/test/Test, $(addsuffix .o, $(SUTs)))
 
 test: $(TEST_OBJS) $(SUT_OBJS)

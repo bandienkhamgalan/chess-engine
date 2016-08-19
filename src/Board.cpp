@@ -41,7 +41,6 @@ namespace Chess
 
 	void Board::AddPieces(const vector<shared_ptr<Piece>>& pieces)
 	{
-		this->pieces.reserve(pieces.size());
 		for (auto iter = pieces.cbegin(); iter != pieces.cend(); iter++)
 			AddPiece(*iter);
 	}
@@ -56,6 +55,5 @@ namespace Chess
 			throw invalid_argument("Board::AddPiece : square already occupied");
 
 		(*this)[pieceLocation].AssignPiece(piece);
-		pieces.emplace_back(piece);
 	}
 }
