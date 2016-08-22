@@ -1,4 +1,4 @@
-#include "Helpers.h"
+#include "Helpers.hpp"
 #include <cctype>
 
 namespace Chess

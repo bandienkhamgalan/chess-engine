@@ -1,5 +1,5 @@
-#include "Location.h"
-#include "Helpers.h"
+#include "Location.hpp"
+#include "Helpers.hpp"
 #include <stdexcept>
 
 namespace Chess

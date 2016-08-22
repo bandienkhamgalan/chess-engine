@@ -1,5 +1,5 @@
 #include <stdexcept>
-#include "Piece.h"
+#include "Piece.hpp"
 
 namespace Chess
 {
@@ -7,17 +7,11 @@ namespace Chess
 
 	/* Constructors */
 
-	Piece::Piece(const Piece::Type& _type)
-		: type { _type }
+	Piece::Piece(const Player& _player, const Piece::Type& _type)
+		: player(_player), type { _type }
 	{
 		if( static_cast<int>(type) <= UNDEFINED || static_cast<int>(type) >= MAX )
 			throw out_of_range("Piece::Piece : invalid piece type given");
-	}
-
-	Piece::Piece(const Piece::Type& _type, const Location& _location)
-		: Piece(_type)
-	{
-		location = make_shared<Location>(_location);
 	}
 
 	/* Public methods */
@@ -26,25 +20,25 @@ namespace Chess
 	{
 		if (!IsInPlay())
 			throw runtime_error("Piece::GetLocation : location was null");
-		return *location;
+		return square.lock()->GetLocation();
 	}
 
 	bool Piece::IsInPlay() const
 	{
-		return (bool)location;
+		return !square.expired();
 	}
 
-	void Piece::SetLocation(shared_ptr<Location> newLocation)
+	void Piece::SetLocation(shared_ptr<ISquare> newSquare)
 	{
-		if (IsInPlay() && !newLocation)
-			throw runtime_error("Piece::SetLocation : piece still in play, so newLocation cannot be null, call RemoveFromPlay()");
-		else if(newLocation)
-			location = newLocation;
+		if (IsInPlay() && !newSquare)
+			throw runtime_error("Piece::SetLocation : piece still in play, so newSquare cannot be null, call RemoveFromPlay()");
+		else if(newSquare)
+			square = newSquare;
 	}
 
 	void Piece::RemoveFromPlay()
 	{
-		location = nullptr;
+		square.reset();
 	}
 	
 	const Piece::Type& Piece::GetType() const
@@ -55,9 +49,14 @@ namespace Chess
 	Piece::operator string() const
 	{
 		string toReturn = PieceTypeToString(type);
-		if(IsInPlay())
-			toReturn += " at " + static_cast<string>(*location);
+		if (IsInPlay())
+			toReturn +=  " at " + static_cast<string>(GetLocation());
 		return toReturn;
+	}
+
+	const Player& Piece::GetPlayer() const
+	{
+		return player;
 	}
 
 	/* Non-member functions */
@@ -67,24 +66,24 @@ namespace Chess
 		return output;
 	}
 
-	string PieceTypeToString(const Piece::Type& type)
+	string PieceTypeToString(const IPiece::Type& type)
 	{
 		switch(type)
 		{
-			case Piece::Pawn:
+			case IPiece::Pawn:
 				return "Pawn";
-			case Piece::Knight:
+			case IPiece::Knight:
 				return "Knight";
-			case Piece::Bishop:
+			case IPiece::Bishop:
 				return "Bishop";
-			case Piece::Rook:
+			case IPiece::Rook:
 				return "Rook";
-			case Piece::Queen:
+			case IPiece::Queen:
 				return "Queen";
-			case Piece::King:
+			case IPiece::King:
 				return "King";
 			default:
 				throw invalid_argument("PieceTypeToString : unrecognized PieceType");
 		}
-	}
+	};
 }

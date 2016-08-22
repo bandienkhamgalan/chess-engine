@@ -1,4 +1,4 @@
-#include "Board.h"
+#include "Board.hpp"
 #include <stdexcept>
 
 namespace Chess
@@ -7,9 +7,14 @@ namespace Chess
 
 	/* Private Methods */
 
-	ISquare& Board::operator[](const Location& location) const
+	shared_ptr<ISquare> Board::GetSquareAtLocation(const Location& location) const
 	{
-		return *(squares[static_cast<int>(location) - static_cast<int>(Location::a1)]);
+		return squares[static_cast<int>(location) - static_cast<int>(Location::a1)];
+	}
+
+	ISquare& Board::UseSquareAtLocation(const Location& location) const
+	{
+		return *(GetSquareAtLocation(location));
 	}
 
 	/* Public Methods */
@@ -23,37 +28,26 @@ namespace Chess
 			});
 	}
 
-	Board::Board(ISquareFactory& squareFactory, const vector<shared_ptr<Piece>>& pieces) : Board(squareFactory)
-	{
-		AddPieces(pieces);
-	}
-
-
 	bool Board::HasPieceAtLocation(const Location& location) const
 	{
-		return (*this)[location].HasPiece();
+		return UseSquareAtLocation(location).HasPiece();
 	}
 
-	Piece& Board::GetPieceAtLocation(const Location& location) const
+	IPiece& Board::GetPieceAtLocation(const Location& location) const
 	{
-		return (*this)[location].GetPiece();
+		return UseSquareAtLocation(location).GetPiece();
 	}
 
-	void Board::AddPieces(const vector<shared_ptr<Piece>>& pieces)
-	{
-		for (auto iter = pieces.cbegin(); iter != pieces.cend(); iter++)
-			AddPiece(*iter);
-	}
-
-	void Board::AddPiece(shared_ptr<Piece> piece)
+	void Board::AddPieceAtLocation(shared_ptr<IPiece> piece, const Location& location)
 	{
 		if (!piece)
 			throw invalid_argument("Board::AddPiece : piece is null");
 
-		Location pieceLocation = piece->GetLocation();
-		if (this->HasPieceAtLocation(pieceLocation))
+		if (this->HasPieceAtLocation(location))
 			throw invalid_argument("Board::AddPiece : square already occupied");
 
-		(*this)[pieceLocation].AssignPiece(piece);
+		auto square = GetSquareAtLocation(location);
+		square->AssignPiece(piece);
+		piece->SetLocation(square);
 	}
 }
