@@ -1,5 +1,5 @@
 CC := clang++
-CCFLAGS := -g -Wno-c++11-extensions -Werror -Wall -std=c++11 -I inc
+CCFLAGS := -g -Wno-c++11-extensions -Wall -Werror -std=c++11 -I inc
 
 default: release
 
@@ -9,8 +9,8 @@ OBJs := $(addprefix obj/, $(addsuffix .o, $(bases)))
 release: $(OBJs)
 	@$(CC) $(CCFLAGS) -o Chess $^
 
-SUTs := Helpers Location Board Piece Player SimpleSquare SimpleSquareFactory
-Mocks := MockSquareFactory
+SUTs := Helpers Location Board Piece Player SimpleSquare SimpleSquareFactory Game FENParser
+Mocks := SquareFactory Piece FENParserDelegate
 SUT_OBJS := $(addprefix obj/, $(addsuffix .o, $(SUTs) $(addprefix mocks/, $(Mocks))))
 TEST_OBJS := obj/test/TestMain.o $(addprefix obj/test/Test, $(addsuffix .o, $(SUTs)))
 

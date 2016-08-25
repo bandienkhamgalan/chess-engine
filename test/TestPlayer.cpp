@@ -1,7 +1,7 @@
 #include "Player.hpp"
-#include "Piece.hpp"
 #include "Location.hpp"
-#include "mocks/MockSquareFactory.hpp"
+#include "mocks/SquareFactory.hpp"
+#include "mocks/Piece.hpp"
 #include <stdexcept>
 #include <boost/test/unit_test.hpp>
 
@@ -33,14 +33,14 @@ BOOST_AUTO_TEST_SUITE(Player_)
 		{
 			Player player { Player::White };
 			BOOST_CHECK_EQUAL(player.GetPieces().size(), 0);
-			BOOST_CHECK_NO_THROW(player.AddPiece(make_shared<Piece>(player, IPiece::Pawn)));
+			BOOST_CHECK_NO_THROW(player.AddPiece(make_shared<Mocks::Piece>()));
 			BOOST_CHECK_EQUAL(player.GetPieces().size(), 1);
 		}
 
 		BOOST_AUTO_TEST_CASE(NullPiece_ThrowsInvalidArgumentException)
 		{
 			Player player { Player::White };
-			BOOST_CHECK_THROW(player.AddPiece(shared_ptr<Piece>(nullptr)), invalid_argument);
+			BOOST_CHECK_THROW(player.AddPiece(shared_ptr<IPiece>(nullptr)), invalid_argument);
 		}
 
 	BOOST_AUTO_TEST_SUITE_END() 
@@ -49,13 +49,13 @@ BOOST_AUTO_TEST_SUITE(Player_)
 
 		BOOST_AUTO_TEST_CASE(Success)
 		{
-			MockSquareFactory factory;
+			Mocks::SquareFactory factory;
 			Player player { Player::White };
-			auto piece1 = make_shared<Piece>(player, IPiece::Pawn);
+			auto piece1 = make_shared<Mocks::Piece>();
 			piece1->SetLocation(move(factory.makeSquare(Location::a1)));
-			auto piece2 = make_shared<Piece>(player, IPiece::Pawn);
+			auto piece2 = make_shared<Mocks::Piece>();
 			piece2->SetLocation(move(factory.makeSquare(Location::a2)));
-			auto piece3 = make_shared<Piece>(player, IPiece::Pawn);
+			auto piece3 = make_shared<Mocks::Piece>();
 			piece3->SetLocation(move(factory.makeSquare(Location::a3)));
 			BOOST_CHECK_EQUAL(player.GetPieces().size(), 0);
 			BOOST_CHECK_NO_THROW(player.AddPieces( { piece1, piece2, piece3 } ));

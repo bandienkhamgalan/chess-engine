@@ -1,6 +1,6 @@
 #include "SimpleSquare.hpp"
 #include "Location.hpp"
-#include "Piece.hpp"
+#include "mocks/Piece.hpp"
 #include "Player.hpp"
 #include <stdexcept>
 #include <boost/test/unit_test.hpp>
@@ -31,8 +31,7 @@ BOOST_AUTO_TEST_SUITE(SimpleSquare_)
 		BOOST_AUTO_TEST_CASE(NonNullPiece_DoesNotThrowAndReturnsPiece)
 		{
 			SimpleSquare square { Location::a1 };
-			Player player { Player::White };
-			auto piece = make_shared<Piece>(player, Piece::King);
+			auto piece = make_shared<Mocks::Piece>();
 			square.AssignPiece(piece);
 			BOOST_CHECK_NO_THROW(square.GetPiece());
 			BOOST_CHECK_EQUAL(&square.GetPiece(), piece.get());
@@ -51,8 +50,7 @@ BOOST_AUTO_TEST_SUITE(SimpleSquare_)
 		BOOST_AUTO_TEST_CASE(NonNullPiece_ReturnsTrue)
 		{
 			SimpleSquare square { Location::a1 };
-			Player player { Player::White };
-			auto piece = make_shared<Piece>(player, Piece::King);
+			auto piece = make_shared<Mocks::Piece>();
 			square.AssignPiece(piece);
 			BOOST_CHECK_EQUAL(square.HasPiece(), true);
 		}

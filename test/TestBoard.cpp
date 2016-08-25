@@ -1,9 +1,9 @@
 #include "Helpers.hpp"
 #include "Board.hpp"
-#include "Piece.hpp"
 #include "Location.hpp"
 #include "Player.hpp"
-#include "mocks/MockSquareFactory.hpp"
+#include "mocks/Piece.hpp"
+#include "mocks/SquareFactory.hpp"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(Board_)
@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_SUITE(Board_)
 
 		BOOST_AUTO_TEST_CASE(InitializesSquares)
 		{
-			MockSquareFactory mockSquareFactory;
+			Mocks::SquareFactory mockSquareFactory;
 			Board board { mockSquareFactory };
 			Location::for_each( [&](Location current)
 			{
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_SUITE(Board_)
 
 		BOOST_AUTO_TEST_CASE(AllSquaresEmpty)
 		{
-			MockSquareFactory mockSquareFactory;
+			Mocks::SquareFactory mockSquareFactory;
 			Board board { mockSquareFactory };
 			Location::for_each( [&](Location current)
 			{
@@ -40,23 +40,19 @@ BOOST_AUTO_TEST_SUITE(Board_)
 
 	BOOST_AUTO_TEST_SUITE_END()
 
-	shared_ptr<IPiece> makePiece(const Player& player, const IPiece::Type type = IPiece::Pawn)
-	{
-		return make_shared<Piece>(player, type);
-	}
-
 	struct PieceAtLocation_Fixture
 	{
-		MockSquareFactory mockSquareFactory;
+		Mocks::SquareFactory mockSquareFactory;
 		Board board;
 		Location location;
 		Player player;
-		shared_ptr<IPiece> piece;
+		shared_ptr<Mocks::Piece> piece;
 
 		PieceAtLocation_Fixture(Location _location)
 			: board { mockSquareFactory }, location { _location }, player { Player::White }
 		{
-			piece = makePiece(player);
+			piece = make_shared<Mocks::Piece>();
+			BOOST_CHECK_EQUAL(piece->SetLocationCalls, 0);
 			board.AddPieceAtLocation(piece, location);
 		}
 	};
@@ -99,23 +95,25 @@ BOOST_AUTO_TEST_SUITE(Board_)
 
 	BOOST_AUTO_TEST_SUITE(AddPieceAtLocation)
 
-		BOOST_AUTO_TEST_CASE(NonNullPiece_SquareEmpty_GetsAdded)
+		BOOST_AUTO_TEST_CASE(NonNullPiece_SquareEmpty_GetsAddedAndUpdatesPiece)
 		{
 			PieceAtLocation_Fixture fixture { Location::d4 };
 			BOOST_CHECK(fixture.board.HasPieceAtLocation(fixture.location));
+			BOOST_CHECK_MESSAGE(fixture.piece->SetLocationCalls == 1, "calls Piece::SetLocation()");
+			BOOST_CHECK_MESSAGE(fixture.piece->GetLocation() == fixture.location, "sets Piece location");
 		}
 
 		BOOST_AUTO_TEST_CASE(NonNullPiece_SquareOccupied_ThrowsException)
 		{
 			PieceAtLocation_Fixture fixture { Location::d4 };
 			Player player { Player::White };
-			auto piece2 = makePiece(player);
+			auto piece2 = make_shared<Mocks::Piece>();
 			BOOST_CHECK_THROW(fixture.board.AddPieceAtLocation(piece2, fixture.location), invalid_argument);
 		}
 
 		BOOST_AUTO_TEST_CASE(NullPiece_ThrowsException)
 		{
-			MockSquareFactory mockFactory;
+			Mocks::SquareFactory mockFactory;
 			Board board { mockFactory };
 			BOOST_CHECK_THROW(board.AddPieceAtLocation(shared_ptr<IPiece>(nullptr), Location::a1), invalid_argument);
 		}

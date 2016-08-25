@@ -1,5 +1,6 @@
 #include "Board.hpp"
 #include <stdexcept>
+#include <string>
 
 namespace Chess
 {
@@ -9,7 +10,7 @@ namespace Chess
 
 	shared_ptr<ISquare> Board::GetSquareAtLocation(const Location& location) const
 	{
-		return squares[static_cast<int>(location) - static_cast<int>(Location::a1)];
+		return squares[static_cast<int>(location) - static_cast<int>(Location::a8)];
 	}
 
 	ISquare& Board::UseSquareAtLocation(const Location& location) const

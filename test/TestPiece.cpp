@@ -2,7 +2,7 @@
 #include "Piece.hpp"
 #include "Location.hpp"
 #include "Helpers.hpp"
-#include "mocks/MockSquareFactory.hpp"
+#include "mocks/SquareFactory.hpp"
 #include <array>
 #include <tuple>
 #include <stdexcept>
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 		{
 			Player player { Player::White };
 			Piece piece { player, IPiece::Knight };
-			MockSquareFactory factory;
+			Mocks::SquareFactory factory;
 			shared_ptr<ISquare> square = move(factory.makeSquare(Location::a1));
 			piece.SetLocation(square);
 			BOOST_REQUIRE_EQUAL(piece.IsInPlay(), true);
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 		{
 			Player player { Player::White };
 			Piece piece { player, IPiece::Knight };
-			MockSquareFactory factory;
+			Mocks::SquareFactory factory;
 			shared_ptr<ISquare> square = move(factory.makeSquare(Location::a2));
 			BOOST_CHECK_NO_THROW(piece.SetLocation(square));
 			BOOST_CHECK_EQUAL(piece.GetLocation(), square->GetLocation());
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 		{
 			Player player { Player::White };
 			Piece piece { player, Piece::Knight };
-			MockSquareFactory factory;
+			Mocks::SquareFactory factory;
 			shared_ptr<ISquare> square = move(factory.makeSquare(Location::a2));
 			BOOST_CHECK_NO_THROW(piece.SetLocation(square));
 			BOOST_CHECK_THROW(piece.SetLocation(shared_ptr<ISquare>(nullptr)), runtime_error);
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 		{
 			Player player { Player::White };
 			Piece piece { player, IPiece::Knight };
-			MockSquareFactory factory;
+			Mocks::SquareFactory factory;
 			shared_ptr<ISquare> square = move(factory.makeSquare(Location::a1));
 			BOOST_CHECK_NO_THROW(piece.SetLocation(square));
 			BOOST_CHECK_EQUAL(piece.IsInPlay(), true);
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 		{
 			Player player { Player::White };
 			Piece piece { player, IPiece::Knight };
-			MockSquareFactory factory;
+			Mocks::SquareFactory factory;
 			shared_ptr<ISquare> square = move(factory.makeSquare(Location::a1));
 			BOOST_CHECK_NO_THROW(piece.SetLocation(square));
 			BOOST_CHECK_EQUAL(piece.IsInPlay(), true);
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 		{
 			Player player { Player::White };
 			Piece piece { player, IPiece::Queen };
-			MockSquareFactory factory;
+			Mocks::SquareFactory factory;
 			shared_ptr<ISquare> square = move(factory.makeSquare(Location::f4));
 			BOOST_CHECK_NO_THROW(piece.SetLocation(square));
 			BOOST_CHECK_EQUAL(Helpers::sprint(piece), "Queen at F4");

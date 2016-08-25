@@ -8,71 +8,102 @@ namespace Chess
 
 	/* Constructors */
 
-	Location::Location(const algebraicLocation& location) : location { location }
+	Location::Location(const AlgebraicLocation& location) : location { location }
 	{
-		int locationInt = static_cast<int>(location);
-		if (locationInt <= UNDEFINED || locationInt >= MAX)
-			throw out_of_range("Location::Location(algebraicLocation): location param out of range");
+		if(location <= UNDEFINED || location >= MAX)
+			throw out_of_range("Location::Location(AlgebraicLocation): location param out of range");
 	}
 
-	Location::Location(const string& location) : Location(Location::fromString(location)) { }
+	Location::Location(const string& location)
+		: Location(Location::fromString(location))
+	{
+
+	}
+
+	Location::Location(const File& file, const uint8_t rank)
+		: Location(Location::fromFileAndRank(file, rank))
+	{
+
+	}
+
+	Location::Location(const uint8_t file, const uint8_t rank)
+		: Location(Location::fromFileAndRank(file, rank))
+	{
+
+	}
 
 	/* Private */
 
-	Location::algebraicLocation Location::fromString(const string& toConvert)
+	Location::AlgebraicLocation Location::fromString(const string& toConvert)
 	{
 		string processed = Helpers::lower(Helpers::trimmed(toConvert));
-		if (processed.length() != 2)
+		if(processed.length() != 2)
 			throw invalid_argument("Location::fromString(string) excepts string of length 2");
 		
-		int column = processed[0] - 'a';
-		int row = processed[1] - '1';
-		int index = (int) a1 + column + 8 * row;
+		int8_t file = processed[0] - 'a' + 1;
+		int8_t rank = processed[1] - '1' + 1;
 
-		if (index <= UNDEFINED || index >= MAX)
-			throw invalid_argument("Location::fromString(string) excepts chess board location in algebraic notation");
-		return static_cast<algebraicLocation>(index);
+		return fromFileAndRank(static_cast<Location::File>(file), rank);
+	}
+
+	Location::AlgebraicLocation Location::fromFileAndRank(const uint8_t file, const uint8_t rank)
+	{
+		if(file < a || file > h)
+			throw out_of_range("Location::fromFileAndRank() : file param out of range");
+		if(rank < 1 || file > 8)
+			throw out_of_range("Location::fromFileAndRank() : rank param out of range");
+
+		return static_cast<Location::AlgebraicLocation>(8 * (8 - rank) + file);
 	}
 
 	/* Public */
 
 	Location::operator std::string() const
 	{
-		int locationInt = static_cast<int>(location);
-		char column = 'A' + (locationInt - 1) % 8;
-		char row = '1' + (locationInt - 1) / 8;
-		return { column, row };
+		char file = 'A' + (location - 1) % 8;
+		char rank = '8' - (location - 1) / 8;
+		return { file, rank };
 	}
 
 	Location::operator int() const
 	{
-		return static_cast<int>(location);
+		return location;
 	}
 
 	bool Location::operator <(const Location& toCompare) const
 	{
-		return static_cast<int>(location) < static_cast<int>(toCompare);
+		return location < static_cast<int>(toCompare);
 	}
 
 	bool Location::operator ==(const Location& toCompare) const
 	{
-		return static_cast<int>(location) == static_cast<int>(toCompare);
+		return location == static_cast<int>(toCompare);
 	}
 
-	bool Location::operator ==(const algebraicLocation& toCompare) const
+	bool Location::operator ==(const AlgebraicLocation& toCompare) const
 	{
-		return static_cast<int>(location) == static_cast<int>(toCompare);
+		return location == static_cast<int>(toCompare);
 	} 
 
 	bool Location::operator !=(const Location& toCompare) const
 	{
-		return static_cast<int>(location) != static_cast<int>(toCompare);
+		return location != static_cast<int>(toCompare);
 	}
 
-	bool Location::operator !=(const algebraicLocation& toCompare) const
+	bool Location::operator !=(const AlgebraicLocation& toCompare) const
 	{
-		return static_cast<int>(location) != static_cast<int>(toCompare);
+		return location != static_cast<int>(toCompare);
 	} 
+
+	Location::File Location::GetFile() const
+	{
+		return static_cast<Location::File>(1 + (location - 1) % 8);
+	}
+
+	uint8_t Location::GetRank() const
+	{
+		return 8 - (location - 1) / 8;
+	}
 
 	/* Non members */
 

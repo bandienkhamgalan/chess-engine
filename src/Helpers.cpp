@@ -1,5 +1,8 @@
 #include "Helpers.hpp"
 #include <cctype>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 
 namespace Chess
 {
@@ -7,13 +10,29 @@ namespace Chess
 	{
 		using namespace std;
 
-		string trimmed(const string& toTrim, const string& whitespace)
+		string trimmed(const string& toTrim)
 		{
-			const auto firstNonWhitespace = toTrim.find_first_not_of(whitespace);
-			if (firstNonWhitespace == std::string::npos)
-				return "";
-			const auto lastNonWhitespace = toTrim.find_last_not_of(whitespace);
-			return toTrim.substr(firstNonWhitespace, lastNonWhitespace - firstNonWhitespace + 1);
+			auto itr = toTrim.cbegin();
+			while (true)
+			{
+				if(itr == toTrim.cend())
+					return "";
+
+				if(!isspace(*itr))
+					break;
+
+				++itr;
+			}
+			
+			auto ritr = toTrim.crbegin();
+			while (true)
+			{
+				if(!isspace(*ritr))
+					break;
+				++ritr;
+			}
+
+			return string(itr, ritr.base());
 		}
 
 		string lower(const string& toConvert)
@@ -21,6 +40,14 @@ namespace Chess
 			string toReturn { toConvert };
 			for (auto cur = toReturn.begin(); cur != toReturn.end(); cur++)
 				*cur = tolower(*cur);
+			return toReturn;
+		}
+
+		vector<string> split(const string& toSplit)
+		{
+			istringstream stream(toSplit);
+			vector<string> toReturn;
+			copy(istream_iterator<string>(stream), istream_iterator<string>(), back_inserter(toReturn));
 			return toReturn;
 		}
 	}

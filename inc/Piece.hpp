@@ -3,12 +3,12 @@
 #include "ISquare.hpp"
 #include "IPiece.hpp"
 #include <memory>
+#include <string>
 
 namespace Chess
 {
 	class Player;
 	class Location;
-	
 	class Piece
 		: public IPiece
 	{
@@ -16,10 +16,10 @@ namespace Chess
 		Piece() = delete;
 		Piece(const Player& _player, const Type& _type);
 
-		const Player& GetPlayer() const override;
-		const Type& GetType() const override;
-		const Location& GetLocation() const override;
-		bool IsInPlay() const override;
+		const Player& GetPlayer() override;
+		const Type& GetType() override;
+		const Location& GetLocation() override;
+		bool IsInPlay() override;
 		void RemoveFromPlay() override;
 		operator std::string() const;
 

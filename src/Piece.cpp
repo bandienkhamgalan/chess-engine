@@ -16,14 +16,14 @@ namespace Chess
 
 	/* Public methods */
 
-	const Location& Piece::GetLocation() const
+	const Location& Piece::GetLocation()
 	{
 		if (!IsInPlay())
 			throw runtime_error("Piece::GetLocation : location was null");
 		return square.lock()->GetLocation();
 	}
 
-	bool Piece::IsInPlay() const
+	bool Piece::IsInPlay()
 	{
 		return !square.expired();
 	}
@@ -41,7 +41,7 @@ namespace Chess
 		square.reset();
 	}
 	
-	const Piece::Type& Piece::GetType() const
+	const Piece::Type& Piece::GetType()
 	{
 		return type;
 	}
@@ -49,12 +49,12 @@ namespace Chess
 	Piece::operator string() const
 	{
 		string toReturn = PieceTypeToString(type);
-		if (IsInPlay())
-			toReturn +=  " at " + static_cast<string>(GetLocation());
+		if (!square.expired())
+			toReturn +=  " at " + static_cast<string>(square.lock()->GetLocation());
 		return toReturn;
 	}
 
-	const Player& Piece::GetPlayer() const
+	const Player& Piece::GetPlayer()
 	{
 		return player;
 	}

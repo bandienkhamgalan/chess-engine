@@ -24,10 +24,10 @@ namespace Chess
 			MAX
 		};
 
-		virtual const Player& GetPlayer() const = 0;
-		virtual const Type& GetType() const = 0;
-		virtual const Location& GetLocation() const = 0;
-		virtual bool IsInPlay() const = 0;
+		virtual const Player& GetPlayer() = 0;
+		virtual const Type& GetType() = 0;
+		virtual const Location& GetLocation() = 0;
+		virtual bool IsInPlay() = 0;
 		
 		virtual void RemoveFromPlay() = 0;
 		virtual void SetLocation(std::shared_ptr<ISquare> newSquare) = 0;

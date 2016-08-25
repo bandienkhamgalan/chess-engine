@@ -2,12 +2,13 @@
 
 #include <string>
 #include <sstream>
+#include <vector>
 
 namespace Chess
 {
 	namespace Helpers
 	{
-		std::string trimmed(const std::string& toTrim, const std::string& whitespace = " \t\n\r");
+		std::string trimmed(const std::string& toTrim);
 		std::string lower(const std::string& toConvert);
 
 		template<typename T>
@@ -27,5 +28,7 @@ namespace Chess
 			sprintinternal(ss, rest...);
 			return ss.str();
 		}
+
+		std::vector<std::string> split(const std::string& toSplit);
 	}
 }
