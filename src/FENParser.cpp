@@ -67,33 +67,44 @@ namespace IO
 		for( uint16_t rank = 8 ; rank >= 1 ; --rank )
 		{
 			uint16_t file = 0;
-			while(true)
+			bool previousWasDigit = false;
+			while(file <= 8 && iter != toParse.cend() && *iter != '/')
 			{
 				if(*iter >= '1' && *iter <= '8')
+				{
+					if(previousWasDigit)
+						throw invalid_argument("PIECE PLACEMENT: can only use numbers 1 through 8");
+					previousWasDigit = true;
 					file += *iter - '0';
+				}
+				else if(*iter == '0' || *iter == '9')
+					throw invalid_argument("PIECE PLACEMENT: can only use numbers 1 through 8");
 				else
 				{
-					++file;
+					if(++file > 8)
+						break;
 
 					Player::Color color;
 					IPiece::Type type;
 					if(ParsePiece(*iter, color, type))
+					{
+						previousWasDigit = false;
 						delegate.FENParserPiece(*this, Location(static_cast<Location::File>(file), rank), color, type);
+					}
 					else
 						throw invalid_argument(Helpers::sprint("PIECE PLACEMENT: failed to parse piece in rank ", rank, ": ", *iter));
 				}
 
 				++iter;
-
-				if(iter == toParse.cend() || *iter == '/' || file > 8)
-					break;
 			}
 
 			if(file != 8)
-				throw invalid_argument(Helpers::sprint("PIECE PLACEMENT: rank ", rank, " had more than 8 files : ", file));
+				throw invalid_argument(Helpers::sprint("PIECE PLACEMENT: rank ", rank, " did not have 8 files : ", file));
 			if(rank == 1 && iter != toParse.cend())
-				throw invalid_argument(Helpers::sprint("PIECE PLACEMENT: had unexpected contents after last rank"));
-			
+				throw invalid_argument(Helpers::sprint("PIECE PLACEMENT: unexpected contents after last rank"));
+			if(iter == toParse.cend() && rank != 1)
+				throw invalid_argument(Helpers::sprint("PIECE PLACEMENT: did not have 8 ranks"));
+
 			++iter;
 		}			
 	}
@@ -102,7 +113,7 @@ namespace IO
 	{
 		// Validate (length)
 		if(toParse.length() != 1)
-			throw invalid_argument("ACTIVE COLOR: failed string length check");
+			throw invalid_argument("ACTIVE COLOR: failed length check");
 
 		switch(toParse[0])
 		{
