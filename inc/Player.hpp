@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IPlayer.hpp"
 #include "IPiece.hpp"
 #include <vector>
 #include <memory>
@@ -7,27 +8,19 @@
 namespace Chess
 {
 	class Player
+		: public IPlayer
 	{
 	public:
-		enum Color : uint8_t
-		{
-			UNDEFINED = 0,
-			White,
-			Black,
-			MAX
-		};
-
 		Player() = delete;
-		Player(const Color& color);
+		Player(const IPlayer::Color& color);
 
-		const Color& GetColor() const;
-		const std::vector<std::shared_ptr<IPiece>>& GetPieces() const;
+		const IPlayer::Color& GetColor() const override;
+		const std::vector<std::shared_ptr<IPiece>>& GetPieces() const override;
 
-		void AddPieces(std::vector<std::shared_ptr<IPiece>> pieces);
-		void AddPiece(std::shared_ptr<IPiece> piece);
+		void AddPiece(std::shared_ptr<IPiece> piece) override;
 
 	private:
-		Color color;
+		IPlayer::Color color;
 		std::vector<std::shared_ptr<IPiece>> pieces;
 	};
 }

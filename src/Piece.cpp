@@ -7,7 +7,7 @@ namespace Chess
 
 	/* Constructors */
 
-	Piece::Piece(const Player& _player, const Piece::Type& _type)
+	Piece::Piece(const IPlayer& _player, const Piece::Type& _type)
 		: player(_player), type { _type }
 	{
 		if( static_cast<int>(type) <= UNDEFINED || static_cast<int>(type) >= MAX )
@@ -54,7 +54,7 @@ namespace Chess
 		return toReturn;
 	}
 
-	const Player& Piece::GetPlayer()
+	const IPlayer& Piece::GetPlayer()
 	{
 		return player;
 	}

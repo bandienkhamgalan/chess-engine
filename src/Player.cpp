@@ -26,12 +26,6 @@ namespace Chess
 		return pieces;
 	}
 
-	void Player::AddPieces(vector<shared_ptr<IPiece>> pieces)
-	{
-		for (auto piece : pieces)
-			AddPiece(piece);
-	}
-
 	void Player::AddPiece(shared_ptr<IPiece> piece)
 	{
 		if (!piece)

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Location.hpp"
-#include "IPiece.hpp"
 #include <memory>
 
 namespace Chess
 {
+	class IPiece;
+	class Location;
 	class ISquare
 	{
 	public:

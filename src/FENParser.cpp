@@ -11,7 +11,7 @@ namespace IO
 
 	/* Constructor */
 
-	FENParser::FENParser(IFENParserDelegate& delegate, const string& FEN)
+	FENParser::FENParser(const std::string& FEN, std::shared_ptr<IFENParserDelegate> delegate)
 		: delegate(delegate), FEN(FEN)
 	{
 		
@@ -19,8 +19,19 @@ namespace IO
 
 	/* Public methods */
 
+	void FENParser::SetDelegate(std::shared_ptr<IFENParserDelegate> delegate)
+	{
+		if(!delegate)
+			throw invalid_argument("FENParser::SetDelegate() : param cannot be null");
+
+		this->delegate = delegate;
+	}
+
 	void FENParser::BeginParsing()
 	{
+		if(delegate.expired())
+			throw runtime_error("FENParser::BeginParsing() : delegate must be set before parsing");
+
 		try
 		{
 			string toParse = Helpers::trimmed(FEN);
@@ -41,22 +52,22 @@ namespace IO
 			ParsePiecePlacement(components[0]);
 			ParseActiveColor(components[1]);
 
-			delegate.FENParserCompleted(*this);
+			delegate.lock()->FENParserCompleted(*this);
 		}
 		catch(const invalid_argument& exception)
 		{
-			delegate.FENParserError(*this, exception.what());
+			delegate.lock()->FENParserError(*this, exception.what());
 		}
 	}
 
-	bool FENParser::operator==(const FENParser& toCompare)
+	bool FENParser::operator==(const IFENParser& toCompare)
 	{
 		return this == &toCompare;
 	}
 
-	bool FENParser::operator!=(const FENParser& toCompare)
+	bool FENParser::operator!=(const IFENParser& toCompare)
 	{
-		return this != &toCompare;
+		return !this->operator==(toCompare);
 	}
 
 	/* Private methods */
@@ -89,7 +100,7 @@ namespace IO
 					if(ParsePiece(*iter, color, type))
 					{
 						previousWasDigit = false;
-						delegate.FENParserPiece(*this, Location(static_cast<Location::File>(file), rank), color, type);
+						delegate.lock()->FENParserPiece(*this, Location(static_cast<Location::File>(file), rank), color, type);
 					}
 					else
 						throw invalid_argument(Helpers::sprint("PIECE PLACEMENT: failed to parse piece in rank ", rank, ": ", *iter));
@@ -119,11 +130,11 @@ namespace IO
 		{
 			case 'w':
 			case 'W':
-				delegate.FENParserActiveColor(*this, Player::White);
+				delegate.lock()->FENParserActiveColor(*this, Player::White);
 				break;
 			case 'b':
 			case 'B':
-				delegate.FENParserActiveColor(*this, Player::Black);
+				delegate.lock()->FENParserActiveColor(*this, Player::Black);
 				break;
 			default:
 				throw invalid_argument(Helpers::sprint("ACTIVE COLOR: expected 'w' or 'b', given : ", toParse[0]));

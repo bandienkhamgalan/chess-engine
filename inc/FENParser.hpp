@@ -1,39 +1,32 @@
 #pragma once
 
 #include <string>
+#include <memory>
+#include "IFENParser.hpp"
 #include "Player.hpp"
 #include "Location.hpp"
 #include "IPiece.hpp"
+#include "IFENParserDelegate.hpp"
 
 namespace Chess
 {
 namespace IO
 {
-	class FENParser;
-
-	class IFENParserDelegate
-	{
-	public:
-		virtual void FENParserError(FENParser& parser, const std::string& error) {};
-		virtual void FENParserPiece(FENParser& parser, Location location, Player::Color color, IPiece::Type type) {};
-		virtual void FENParserActiveColor(FENParser& parser, Player::Color color) {};
-		virtual void FENParserCompleted(FENParser& parser) {};
-		virtual ~IFENParserDelegate() {};
-	};
-
 	class FENParser
+		: public IFENParser
 	{
 	public:
 		FENParser() = delete;
-		FENParser(IFENParserDelegate& delegate, const std::string& FEN);
-		void BeginParsing();
-		bool operator==(const FENParser& toCompare);
-		bool operator!=(const FENParser& toCompare);
+		FENParser(const std::string& FEN, std::shared_ptr<IFENParserDelegate> delegate = nullptr);
+		void SetDelegate(std::shared_ptr<IFENParserDelegate> delegate) override;
+		void BeginParsing() override;
+		bool operator==(const IFENParser& toCompare) override;
+		bool operator!=(const IFENParser& toCompare) override;
 	private:
 		void ParsePiecePlacement(const std::string& toParse);
 		void ParseActiveColor(const std::string& toParse);
 		bool ParsePiece(const char& c, Player::Color& color, IPiece::Type& type);
-		IFENParserDelegate& delegate;
+		std::weak_ptr<IFENParserDelegate> delegate;
 		const std::string FEN;
 	};
 }

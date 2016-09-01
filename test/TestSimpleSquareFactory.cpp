@@ -1,3 +1,5 @@
+#include "Location.hpp"
+#include "ISquare.hpp"
 #include "ISquareFactory.hpp"
 #include "SimpleSquareFactory.hpp"
 #include <memory>

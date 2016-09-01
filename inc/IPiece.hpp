@@ -5,8 +5,7 @@
 
 namespace Chess
 {
-	class Player;
-	class Type;
+	class IPlayer;
 	class Location;
 	class ISquare;
 	class IPiece
@@ -24,7 +23,7 @@ namespace Chess
 			MAX
 		};
 
-		virtual const Player& GetPlayer() = 0;
+		virtual const IPlayer& GetPlayer() = 0;
 		virtual const Type& GetType() = 0;
 		virtual const Location& GetLocation() = 0;
 		virtual bool IsInPlay() = 0;

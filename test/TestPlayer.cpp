@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_SUITE(Player_)
 		{
 			BOOST_CHECK_NO_THROW(Player player(Player::White));
 			Player player { Player::White };
-			BOOST_CHECK_EQUAL( player.GetColor(), Player::White );
+			BOOST_CHECK_EQUAL(player.GetColor(), Player::White);
 		}
 
 	BOOST_AUTO_TEST_SUITE_END()
@@ -43,29 +43,6 @@ BOOST_AUTO_TEST_SUITE(Player_)
 			BOOST_CHECK_THROW(player.AddPiece(shared_ptr<IPiece>(nullptr)), invalid_argument);
 		}
 
-	BOOST_AUTO_TEST_SUITE_END() 
-
-	BOOST_AUTO_TEST_SUITE(AddPieces)
-
-		BOOST_AUTO_TEST_CASE(Success)
-		{
-			Mocks::SquareFactory factory;
-			Player player { Player::White };
-			auto piece1 = make_shared<Mocks::Piece>();
-			piece1->SetLocation(move(factory.makeSquare(Location::a1)));
-			auto piece2 = make_shared<Mocks::Piece>();
-			piece2->SetLocation(move(factory.makeSquare(Location::a2)));
-			auto piece3 = make_shared<Mocks::Piece>();
-			piece3->SetLocation(move(factory.makeSquare(Location::a3)));
-			BOOST_CHECK_EQUAL(player.GetPieces().size(), 0);
-			BOOST_CHECK_NO_THROW(player.AddPieces( { piece1, piece2, piece3 } ));
-			auto pieces = player.GetPieces();
-			BOOST_CHECK_EQUAL(pieces.size(), 3);
-			BOOST_CHECK_EQUAL(pieces[0].get(), piece1.get());
-			BOOST_CHECK_EQUAL(pieces[1].get(), piece2.get());
-			BOOST_CHECK_EQUAL(pieces[2].get(), piece3.get());
-		}
-
-	BOOST_AUTO_TEST_SUITE_END() 
+	BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE_END() 

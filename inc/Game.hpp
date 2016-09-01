@@ -2,11 +2,11 @@
 
 #include <memory>
 #include <string>
-#include "Player.hpp"
+#include "IPlayer.hpp"
 #include "IPiece.hpp"
-#include "Board.hpp"
-#include "SimpleSquareFactory.hpp"
-#include "FENParser.hpp"
+#include "IBoard.hpp"
+#include "IFENParser.hpp"
+#include "IFENParserDelegate.hpp"
 
 namespace Chess
 {
@@ -14,26 +14,28 @@ namespace Chess
 		: public IO::IFENParserDelegate
 	{
 	public:
-		Game();
-		Game(const std::string& FEN);
+		Game() = delete;
+		Game(std::shared_ptr<IBoard> board, std::shared_ptr<IPlayer> white, std::shared_ptr<IPlayer> black);
+		Game(std::shared_ptr<IBoard> board, std::shared_ptr<IPlayer> white, std::shared_ptr<IPlayer> black, std::shared_ptr<IO::IFENParser> parser);
 
-		const Board& GetBoard();
-		const Player& GetWhitePlayer();
-		const Player& GetBlackPlayer();
-		Player::Color GetActiveColor();
+		const IBoard& GetBoard();
+		const IPlayer& GetWhitePlayer();
+		const IPlayer& GetBlackPlayer();
+		IPlayer::Color GetActiveColor();
 
-		/* IO::IFenParserDelegate functions */
-		void FENParserError(IO::FENParser& parser, const std::string& error) override;
-		void FENParserPiece(IO::FENParser& parser, Location location, Player::Color color, IPiece::Type type) override;
-		void FENParserActiveColor(IO::FENParser& parser, Player::Color color) override;
-		void FENParserCompleted(IO::FENParser& parser) override;
+		/* IO::IFENParserDelegate methods */
+		void FENParserError(IO::IFENParser& parser, const std::string& error) override;
+		void FENParserPiece(IO::IFENParser& parser, Location location, IPlayer::Color color, IPiece::Type type) override;
+		void FENParserActiveColor(IO::IFENParser& parser, IPlayer::Color color) override;
+		void FENParserCompleted(IO::IFENParser& parser) override;
 
 	private:
-		std::unique_ptr<Player> white;
-		std::unique_ptr<Player> black;
-		SimpleSquareFactory simpleSquareFactory;
-		std::unique_ptr<Board> board;
-		std::unique_ptr<IO::FENParser> fenParser;
-		Player::Color activeColor;
+		void DefaultSetup();
+		void CreatePieceForPlayerAtLocation(IPlayer::Color color, Location location, IPiece::Type type);
+		std::shared_ptr<IPlayer> white;
+		std::shared_ptr<IPlayer> black;
+		std::shared_ptr<IBoard> board;
+		std::shared_ptr<IO::IFENParser> FENParser;
+		IPlayer::Color activeColor;
 	};
 }

@@ -10,7 +10,7 @@ release: $(OBJs)
 	@$(CC) $(CCFLAGS) -o Chess $^
 
 SUTs := Helpers Location Board Piece Player SimpleSquare SimpleSquareFactory Game FENParser
-Mocks := SquareFactory Piece FENParserDelegate
+Mocks := SquareFactory Piece FENParserDelegate FENParser
 SUT_OBJS := $(addprefix obj/, $(addsuffix .o, $(SUTs) $(addprefix mocks/, $(Mocks))))
 TEST_OBJS := obj/test/TestMain.o $(addprefix obj/test/Test, $(addsuffix .o, $(SUTs)))
 

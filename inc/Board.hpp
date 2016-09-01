@@ -1,7 +1,8 @@
 #pragma once
 
-#include <vector>
+#include <array>
 #include <memory>
+#include "IBoard.hpp"
 #include "ISquareFactory.hpp"
 #include "ISquare.hpp"
 #include "IPiece.hpp"
@@ -10,13 +11,14 @@
 namespace Chess
 {
 	class Board
+		: public IBoard
 	{
 	public:
-		bool HasPieceAtLocation(const Location& location) const;
-		IPiece& GetPieceAtLocation(const Location& location) const;
+		bool HasPieceAtLocation(const Location& location) const override;
+		IPiece& GetPieceAtLocation(const Location& location) const override;
 		Board() = delete;
 		Board(ISquareFactory& squareFactory);
-		void AddPieceAtLocation(std::shared_ptr<IPiece> piece, const Location& location);
+		void AddPieceAtLocation(std::shared_ptr<IPiece> piece, const Location& location) override;
 		
 	private:
 		std::shared_ptr<ISquare> GetSquareAtLocation(const Location& location) const;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ISquare.hpp"
+#include "Location.hpp"
 #include <memory>
 
 namespace Chess
