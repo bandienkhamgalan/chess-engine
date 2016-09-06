@@ -1,5 +1,0 @@
-- Player.
-- IPieceMoveFinder takes in Board
-- Square pub/sub for changes
-
-- Integration tests
