@@ -9,30 +9,57 @@ namespace Mocks
 	Piece::Piece()
 		: player { Player::White }, type { IPiece::Pawn }
 	{
-
+		GetTypeCalls = new int(0);
+		GetPlayerCalls = new int(0);
+		GetValidMovesCalls = new int(0);
+		GetColorCalls = new int(0);
+		IsInPlayCalls = new int(0);
+		GetLocationCalls = new int(0);
 	}
 
-	const Player& Piece::GetPlayer()
+	Piece::~Piece()
 	{
-		++GetPlayerCalls;
+		delete GetTypeCalls;
+		delete GetPlayerCalls;
+		delete GetValidMovesCalls;
+		delete GetColorCalls;
+		delete IsInPlayCalls;
+		delete GetLocationCalls;
+	}
+
+	const IPlayer& Piece::GetPlayer() const
+	{
+		++(*GetPlayerCalls);
 		return player;
 	}
 
-	const IPiece::Type& Piece::GetType()
+	const IPiece::Type& Piece::GetType() const
 	{
-		++GetTypeCalls;
+		++(*GetTypeCalls);
 		return type;
 	}
 
-	const Location& Piece::GetLocation()
+	const Location& Piece::GetLocation() const
 	{
-		++GetLocationCalls;
+		++(*GetLocationCalls);
 		return square.lock()->GetLocation();
 	}
 
-	bool Piece::IsInPlay()
+	const IPlayer::Color& Piece::GetColor() const
 	{
-		++IsInPlayCalls;
+		++(*GetColorCalls);
+		return player.GetColor();
+	}
+
+	const std::vector<Location>& Piece::GetValidMoves() const
+	{
+		++(*GetValidMovesCalls);
+		return GetValidMovesReturnValue;
+	}
+
+	bool Piece::IsInPlay() const
+	{
+		++(*IsInPlayCalls);
 		return !square.expired();
 	}
 

@@ -16,14 +16,36 @@ namespace Chess
 
 	/* Public methods */
 
-	const Location& Piece::GetLocation()
+	const IPlayer& Piece::GetPlayer() const
+	{
+		return player;
+	}
+
+	const IPlayer::Color& Piece::GetColor() const
+	{
+		return player.GetColor();
+	}
+
+	const Location& Piece::GetLocation() const
 	{
 		if (!IsInPlay())
 			throw runtime_error("Piece::GetLocation : location was null");
 		return square.lock()->GetLocation();
 	}
+	
+	const Piece::Type& Piece::GetType() const
+	{
+		return type;
+	}
 
-	bool Piece::IsInPlay()
+	const vector<Location>& Piece::GetValidMoves() const
+	{
+		auto toReturn = new vector<Location>();
+		delete toReturn;
+		return *toReturn;
+	}
+
+	bool Piece::IsInPlay() const
 	{
 		return !square.expired();
 	}
@@ -40,11 +62,6 @@ namespace Chess
 	{
 		square.reset();
 	}
-	
-	const Piece::Type& Piece::GetType()
-	{
-		return type;
-	}
 
 	Piece::operator string() const
 	{
@@ -52,11 +69,6 @@ namespace Chess
 		if (!square.expired())
 			toReturn +=  " at " + static_cast<string>(square.lock()->GetLocation());
 		return toReturn;
-	}
-
-	const IPlayer& Piece::GetPlayer()
-	{
-		return player;
 	}
 
 	/* Non-member functions */

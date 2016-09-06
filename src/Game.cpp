@@ -37,6 +37,9 @@ namespace Chess
 
 	IPlayer::Color Game::GetActiveColor()
 	{
+		if(activeColor != IPlayer::White && activeColor != IPlayer::Black)
+			throw runtime_error("Game::GetActiveColor() : Game is still initializing, there is no active color");
+		
 		return activeColor;
 	}
 

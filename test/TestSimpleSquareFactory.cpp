@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_SUITE(SimpleSquareFactory_)
 		{
 			unique_ptr<ISquareFactory> factory { new SimpleSquareFactory() };
 			Location location { Location::e5 };
-			shared_ptr<ISquare> square = move(factory->makeSquare(location));
+			shared_ptr<ISquare> square = factory->makeSquare(location);
 			BOOST_CHECK_EQUAL(square.use_count(), 1);
 		}
 

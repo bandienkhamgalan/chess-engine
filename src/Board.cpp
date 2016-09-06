@@ -18,14 +18,14 @@ namespace Chess
 		return *(GetSquareAtLocation(location));
 	}
 
-	/* Public Methods */
+	/* IBoard methods */
 
 	Board::Board(ISquareFactory& squareFactory)
 	{
 		int currentSquareIndex = 0;
 		Location::for_each( [&](Location currentLocation)
 			{
-				squares[currentSquareIndex++] = std::move(squareFactory.makeSquare(currentLocation));
+				squares[currentSquareIndex++] = squareFactory.makeSquare(currentLocation);
 			});
 	}
 
@@ -50,5 +50,31 @@ namespace Chess
 		auto square = GetSquareAtLocation(location);
 		square->AssignPiece(piece);
 		piece->SetLocation(square);
+	}
+
+	void Board::MovePieceToLocation(std::shared_ptr<IPiece> piece, const Location& location) 
+	{
+		
+	}
+
+	/* IObservableBoard methods */
+	void Board::AddListener(IObservableBoardObservor &observor)
+	{
+
+	}
+
+	void Board::AddListenerForSquare(IObservableBoardObservor &observor, const Location& location)
+	{
+
+	}
+	
+	void Board::RemoveListener(IObservableBoardObservor &observor)
+	{
+
+	}
+	
+	void Board::RemoveListenerForSquare(IObservableBoardObservor &observor, const Location& location)
+	{
+
 	}
 }

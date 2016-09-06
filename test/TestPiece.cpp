@@ -12,7 +12,6 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 
 	using namespace std;
 	using namespace Chess;
-
 	BOOST_AUTO_TEST_SUITE(constructor)
 
 		BOOST_AUTO_TEST_CASE(ValidArguments_InitializesInstanceVariables)
@@ -24,7 +23,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 			BOOST_CHECK_EQUAL(piece->GetType(), pieceType);
 			BOOST_CHECK_EQUAL(&piece->GetPlayer(), &player);
 		}
-
+		
 		BOOST_AUTO_TEST_CASE(InvalidType_ThrowsOutOfRangeException)
 		{
 			Player player { Player::White };
@@ -41,7 +40,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 			Player player { Player::White };
 			Piece piece { player, IPiece::Knight };
 			Mocks::SquareFactory factory;
-			shared_ptr<ISquare> square = move(factory.makeSquare(Location::a1));
+			shared_ptr<ISquare> square = factory.makeSquare(Location::a1);
 			piece.SetLocation(square);
 			BOOST_REQUIRE_EQUAL(piece.IsInPlay(), true);
 			BOOST_CHECK_EQUAL(piece.GetLocation(), square->GetLocation());
@@ -64,7 +63,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 			Player player { Player::White };
 			Piece piece { player, IPiece::Knight };
 			Mocks::SquareFactory factory;
-			shared_ptr<ISquare> square = move(factory.makeSquare(Location::a2));
+			shared_ptr<ISquare> square = factory.makeSquare(Location::a2);
 			BOOST_CHECK_NO_THROW(piece.SetLocation(square));
 			BOOST_CHECK_EQUAL(piece.GetLocation(), square->GetLocation());
 		}
@@ -74,7 +73,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 			Player player { Player::White };
 			Piece piece { player, Piece::Knight };
 			Mocks::SquareFactory factory;
-			shared_ptr<ISquare> square = move(factory.makeSquare(Location::a2));
+			shared_ptr<ISquare> square = factory.makeSquare(Location::a2);
 			BOOST_CHECK_NO_THROW(piece.SetLocation(square));
 			BOOST_CHECK_THROW(piece.SetLocation(shared_ptr<ISquare>(nullptr)), runtime_error);
 		}
@@ -104,7 +103,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 			Player player { Player::White };
 			Piece piece { player, IPiece::Knight };
 			Mocks::SquareFactory factory;
-			shared_ptr<ISquare> square = move(factory.makeSquare(Location::a1));
+			shared_ptr<ISquare> square = factory.makeSquare(Location::a1);
 			BOOST_CHECK_NO_THROW(piece.SetLocation(square));
 			BOOST_CHECK_EQUAL(piece.IsInPlay(), true);
 		}
@@ -118,7 +117,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 			Player player { Player::White };
 			Piece piece { player, IPiece::Knight };
 			Mocks::SquareFactory factory;
-			shared_ptr<ISquare> square = move(factory.makeSquare(Location::a1));
+			shared_ptr<ISquare> square = factory.makeSquare(Location::a1);
 			BOOST_CHECK_NO_THROW(piece.SetLocation(square));
 			BOOST_CHECK_EQUAL(piece.IsInPlay(), true);
 			piece.RemoveFromPlay();
@@ -141,7 +140,7 @@ BOOST_AUTO_TEST_SUITE(Piece_)
 			Player player { Player::White };
 			Piece piece { player, IPiece::Queen };
 			Mocks::SquareFactory factory;
-			shared_ptr<ISquare> square = move(factory.makeSquare(Location::f4));
+			shared_ptr<ISquare> square = factory.makeSquare(Location::f4);
 			BOOST_CHECK_NO_THROW(piece.SetLocation(square));
 			BOOST_CHECK_EQUAL(Helpers::sprint(piece), "Queen at F4");
 		}

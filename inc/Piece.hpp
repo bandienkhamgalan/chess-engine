@@ -15,14 +15,17 @@ namespace Chess
 		Piece() = delete;
 		Piece(const IPlayer& _player, const Type& _type);
 
-		const IPlayer& GetPlayer() override;
-		const Type& GetType() override;
-		const Location& GetLocation() override;
-		bool IsInPlay() override;
-		void RemoveFromPlay() override;
-		operator std::string() const;
+		const IPlayer& GetPlayer() const override;
+		const Type& GetType() const override;
+		const Location& GetLocation() const override;
+		const IPlayer::Color& GetColor() const override;
+		bool IsInPlay() const override;
+		const std::vector<Location>& GetValidMoves() const override;
 
+		void RemoveFromPlay() override;
 		void SetLocation(std::shared_ptr<ISquare> newSquare) override;
+
+		operator std::string() const;
 
 	private:
 		const IPlayer& player;

@@ -2,10 +2,10 @@
 
 #include <stdexcept>
 #include <memory>
+#include "IPlayer.hpp"
 
 namespace Chess
 {
-	class IPlayer;
 	class Location;
 	class ISquare;
 	class IPiece
@@ -23,11 +23,13 @@ namespace Chess
 			MAX
 		};
 
-		virtual const IPlayer& GetPlayer() = 0;
-		virtual const Type& GetType() = 0;
-		virtual const Location& GetLocation() = 0;
-		virtual bool IsInPlay() = 0;
-		
+		virtual const IPlayer& GetPlayer() const = 0;
+		virtual const Type& GetType() const = 0;
+		virtual const Location& GetLocation() const = 0;
+		virtual const IPlayer::Color& GetColor() const = 0;
+		virtual bool IsInPlay() const = 0;
+		virtual const std::vector<Location>& GetValidMoves() const = 0;
+
 		virtual void RemoveFromPlay() = 0;
 		virtual void SetLocation(std::shared_ptr<ISquare> newSquare) = 0;
 

@@ -5,6 +5,7 @@
 #include "Player.hpp"
 #include "Location.hpp"
 #include <memory>
+#include <vector>
 
 namespace Chess
 {
@@ -19,14 +20,20 @@ namespace Mocks
 		std::weak_ptr<ISquare> square;
 
 		Piece();
-		int GetPlayerCalls = 0;
-		const Player& GetPlayer() override;
-		int GetTypeCalls = 0;
-		const Type& GetType() override;
-		int GetLocationCalls = 0;
-		const Location& GetLocation() override;
-		int IsInPlayCalls = 0;
-		bool IsInPlay() override;
+		~Piece();
+		int* GetPlayerCalls;
+		const IPlayer& GetPlayer() const override;
+		int* GetTypeCalls;
+		const Type& GetType() const override;
+		int* GetLocationCalls = 0;
+		const Location& GetLocation() const override;
+		int* GetColorCalls;
+		const IPlayer::Color& GetColor() const override;
+		int* GetValidMovesCalls = 0;
+		std::vector<Location> GetValidMovesReturnValue;
+		const std::vector<Location>& GetValidMoves() const override;
+		int* IsInPlayCalls;
+		bool IsInPlay() const override;
 		int RemoveFromPlayCalls = 0;
 		void RemoveFromPlay() override;
 		int SetLocationCalls = 0;
