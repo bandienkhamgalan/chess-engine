@@ -7,7 +7,7 @@ namespace Mocks
 	using namespace std;
 
 	Piece::Piece()
-		: player { Player::White }, type { IPiece::Pawn }
+		: player { Player::White }, type { IPiece::Pawn }, GetLocationReturnValue { Location::a1 }
 	{
 		GetTypeCalls = new int(0);
 		GetPlayerCalls = new int(0);
@@ -42,7 +42,7 @@ namespace Mocks
 	const Location& Piece::GetLocation() const
 	{
 		++(*GetLocationCalls);
-		return square.lock()->GetLocation();
+		return GetLocationReturnValue;
 	}
 
 	const IPlayer::Color& Piece::GetColor() const
@@ -60,19 +60,17 @@ namespace Mocks
 	bool Piece::IsInPlay() const
 	{
 		++(*IsInPlayCalls);
-		return !square.expired();
+		return IsInPlayReturnValue;
 	}
 
 	void Piece::RemoveFromPlay()
 	{
 		++RemoveFromPlayCalls;
-		square.reset();
 	}
 
 	void Piece::SetLocation(std::shared_ptr<ISquare> newSquare)
 	{
-		++SetLocationCalls;
-		square = newSquare;
+		SetLocationParams.push_back(newSquare);
 	}
 }
 }

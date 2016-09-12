@@ -18,4 +18,4 @@ namespace Mocks
 		return unique_ptr<ISquare> { new SimpleSquare(location) };
 	};
 }
-}	
+}

@@ -32,5 +32,6 @@ namespace Chess
 		ISquare& UseSquareAtLocation(const Location& location) const;
 
 		std::array<std::shared_ptr<ISquare>, 64> squares;
+		std::array<std::vector<IObservableBoardObservor>, 64> squareListeners;
 	};
 }

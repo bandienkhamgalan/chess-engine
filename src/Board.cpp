@@ -41,10 +41,10 @@ namespace Chess
 
 	void Board::AddPieceAtLocation(shared_ptr<IPiece> piece, const Location& location)
 	{
-		if (!piece)
+		if(!piece)
 			throw invalid_argument("Board::AddPiece : piece is null");
 
-		if (this->HasPieceAtLocation(location))
+		if(HasPieceAtLocation(location))
 			throw invalid_argument("Board::AddPiece : square already occupied");
 
 		auto square = GetSquareAtLocation(location);
@@ -54,7 +54,22 @@ namespace Chess
 
 	void Board::MovePieceToLocation(std::shared_ptr<IPiece> piece, const Location& location) 
 	{
+		if(!piece)
+			throw invalid_argument("Board::MovePieceToLocation() : piece cannot be null");
+
+		if(!piece->IsInPlay())
+			throw runtime_error("Board::MovePieceToLocation() : piece is not in play cannot move");
+
+		auto oldSquare = GetSquareAtLocation(piece->GetLocation());
+		if(!oldSquare->HasPiece() || &oldSquare->GetPiece() != piece.get())
+			throw invalid_argument("Board::MovePieceToLocation() : piece was not registered with this board");
+		auto newSquare = GetSquareAtLocation(location);
+		if(newSquare->HasPiece())
+			throw invalid_argument("Board::MovePieceToLocation() : location is occupied");
 		
+		oldSquare->RemovePiece();
+		newSquare->AssignPiece(piece);
+		piece->SetLocation(newSquare);
 	}
 
 	/* IObservableBoard methods */

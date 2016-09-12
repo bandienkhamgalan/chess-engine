@@ -3,6 +3,7 @@
 #include "IPiece.hpp"
 #include "Location.hpp"
 #include "IPlayer.hpp"
+#include "IPieceMoveLogic.hpp"
 #include <memory>
 #include <string>
 
@@ -14,6 +15,7 @@ namespace Chess
 	public:
 		Piece() = delete;
 		Piece(const IPlayer& _player, const Type& _type);
+		Piece(const IPlayer& _player, const Type& _type, IPieceMoveLogic& pieceMoveLogic);
 
 		const IPlayer& GetPlayer() const override;
 		const Type& GetType() const override;

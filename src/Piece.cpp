@@ -7,11 +7,17 @@ namespace Chess
 
 	/* Constructors */
 
-	Piece::Piece(const IPlayer& _player, const Piece::Type& _type)
+	Piece::Piece(const IPlayer& _player, const IPiece::Type& _type)
 		: player(_player), type { _type }
 	{
 		if( static_cast<int>(type) <= UNDEFINED || static_cast<int>(type) >= MAX )
 			throw out_of_range("Piece::Piece : invalid piece type given");
+	}
+
+	Piece::Piece(const IPlayer& _player, const IPiece::Type& _type, IPieceMoveLogic& pieceMoveLogic)
+		: Piece(_player, _type)
+	{
+
 	}
 
 	/* Public methods */
