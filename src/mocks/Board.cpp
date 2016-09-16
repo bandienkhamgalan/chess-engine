@@ -28,7 +28,11 @@ namespace Mocks
 	bool Board::HasPieceAtLocation(const Location& location) const
 	{
 		HasPieceAtLocationParams->push_back(location);
-		return HasPieceAtLocationReturnValue;
+		const auto& itr = HasPieceAtLocationReturnValue.find(location);
+		if(itr != HasPieceAtLocationReturnValue.end())
+			return itr->second;
+		else
+			return false;
 	}
 
 

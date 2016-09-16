@@ -8,16 +8,16 @@ namespace Chess
 	class Location
 	{
 	public:
-		enum AlgebraicLocation : uint8_t;
-		enum File : uint8_t;
+		enum AlgebraicLocation : int8_t;
+		enum File : int8_t;
 
 		Location() = delete;
 		Location(const AlgebraicLocation& location);
-		Location(const File& file, const uint8_t rank);
-		Location(const uint8_t file, const uint8_t rank);
+		Location(const File& file, const int8_t rank);
+		Location(const int8_t file, const int8_t rank);
 		Location(const std::string& location);
 
-		enum File : uint8_t
+		enum File : int8_t
 		{
 			a = 1,
 			b,
@@ -29,7 +29,7 @@ namespace Chess
 			h
 		};
 
-		enum AlgebraicLocation : uint8_t
+		enum AlgebraicLocation : int8_t
 		{
 			UNDEFINED,
 			a8, b8, c8, d8, e8, f8, g8, h8,
@@ -52,7 +52,7 @@ namespace Chess
 		}
 
 		File GetFile() const;
-		uint8_t GetRank() const;
+		int8_t GetRank() const;
 
 		bool operator <(const Location& toCompare) const;
 		bool operator ==(const Location& toCompare) const;
@@ -62,9 +62,9 @@ namespace Chess
 		operator int() const;
 		operator std::string() const;
 	private:
-		const AlgebraicLocation location;
+		AlgebraicLocation location;
 		static AlgebraicLocation fromString(const std::string& toConvert);
-		static AlgebraicLocation fromFileAndRank(const uint8_t file, const uint8_t rank);
+		static AlgebraicLocation fromFileAndRank(const int8_t file, const int8_t rank);
 	};
 
 	std::ostream& operator<<(std::ostream& output, const Location& location);

@@ -11,20 +11,20 @@ namespace IO
 
 	/* Constructor */
 
-	FENParser::FENParser(const std::string& FEN, std::shared_ptr<IFENParserDelegate> delegate)
-		: delegate(delegate), FEN(FEN)
+	FENParser::FENParser(const std::string& _FEN, std::shared_ptr<IFENParserDelegate> _delegate)
+		: FEN(_FEN), delegate(_delegate)
 	{
 		
 	}
 
 	/* Public methods */
 
-	void FENParser::SetDelegate(std::shared_ptr<IFENParserDelegate> delegate)
+	void FENParser::SetDelegate(std::shared_ptr<IFENParserDelegate> _delegate)
 	{
-		if(!delegate)
+		if(!_delegate)
 			throw invalid_argument("FENParser::SetDelegate() : param cannot be null");
 
-		this->delegate = delegate;
+		delegate = _delegate;
 	}
 
 	void FENParser::BeginParsing()

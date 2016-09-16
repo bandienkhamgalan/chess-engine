@@ -7,17 +7,11 @@ namespace Chess
 
 	/* Constructors */
 
-	Piece::Piece(const IPlayer& _player, const IPiece::Type& _type)
-		: player(_player), type { _type }
+	Piece::Piece(const IPlayer& _player, const IPiece::Type& _type, shared_ptr<IPieceMoveLogic> _pieceMoveLogic)
+		: player(_player), type(_type), pieceMoveLogic(_pieceMoveLogic)
 	{
-		if( static_cast<int>(type) <= UNDEFINED || static_cast<int>(type) >= MAX )
+		if(static_cast<int>(type) <= UNDEFINED || static_cast<int>(type) >= MAX)
 			throw out_of_range("Piece::Piece : invalid piece type given");
-	}
-
-	Piece::Piece(const IPlayer& _player, const IPiece::Type& _type, IPieceMoveLogic& pieceMoveLogic)
-		: Piece(_player, _type)
-	{
-
 	}
 
 	/* Public methods */
@@ -34,7 +28,7 @@ namespace Chess
 
 	const Location& Piece::GetLocation() const
 	{
-		if (!IsInPlay())
+		if(!IsInPlay())
 			throw runtime_error("Piece::GetLocation : location was null");
 		return square.lock()->GetLocation();
 	}
@@ -46,9 +40,7 @@ namespace Chess
 
 	const vector<Location>& Piece::GetValidMoves() const
 	{
-		auto toReturn = new vector<Location>();
-		delete toReturn;
-		return *toReturn;
+		return pieceMoveLogic->GetValidMoves();
 	}
 
 	bool Piece::IsInPlay() const

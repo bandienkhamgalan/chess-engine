@@ -1,18 +1,39 @@
 #include "KnightMoveLogic.hpp"
+#include <stdexcept>
 
 namespace Chess
 {
 	using namespace std;
 
-	/* Constructors */
-	KnightMoveLogic::KnightMoveLogic(const IObservableBoard& board, const IPiece& piece)
-		: board(board), piece(piece)
+	KnightMoveLogic::KnightMoveLogic(shared_ptr<IObservableBoard> _board, shared_ptr<IPiece> _piece)
+		: board(_board)
 	{
+		if(_piece)
+			SetPiece(_piece);
+
 		// RecomputeValidMoves();
 		// RegisterListeners();
 	}
 
-	const std::vector<Location>& GetValidMoves() const
+	KnightMoveLogic::~KnightMoveLogic()
+	{
+		if(!board.expired())
+			board.lock()->RemoveListener(*this);
+	}
+
+	/* Public methods */
+
+	void KnightMoveLogic::SetPiece(std::shared_ptr<IPiece> toSet)
+	{
+		if(!toSet)
+			throw invalid_argument("Piece::SetPiece() : piece cannot be null");
+		if(!piece.expired())
+			throw runtime_error("Piece::SetPiece() : piece already set");
+
+		piece = toSet;
+	}
+
+	const std::vector<Location>& KnightMoveLogic::GetValidMoves()
 	{
 		RecomputeValidMoves();
 		return validMoves;
@@ -32,23 +53,41 @@ namespace Chess
 	void KnightMoveLogic::RecomputeValidMoves()
 	{
 		vector<Location> newValidMoves;
-		uint8_t rank = piece.GetLocation().GetRank();
-		uint8_t file = piece.GetLocation().GetFile();
-		for(uint8_t fileAdder = -1  ; fileAdder <= 1 ; fileAdder += 2)
-			for(uint8_t rankAdder = -2 ; rankAdder <= 2 ; rankAdder += 4)
-				if(rank >= 1 && rank <= 8 && file >= 1 && file <= 8)
-					newValidMoves.emplace_back(file, rank);
+		if(piece.expired())
+			throw runtime_error("KnightMoveLogic::RecomputeValidMoves() : piece has not been set or has expired");
+		if(board.expired())
+			throw runtime_error("KnightMoveLogic::RecomputeValidMoves() : board has not been set or has expired");
+		
+		auto piecePtr = piece.lock(); 
+		if(piecePtr->IsInPlay())
+		{
+			auto rank = piecePtr->GetLocation().GetRank();
+			auto file = piecePtr->GetLocation().GetFile();
+			for(auto fileAdder = -1  ; fileAdder <= 1 ; fileAdder += 2)
+			{
+				for(auto rankAdder = -2 ; rankAdder <= 2 ; rankAdder += 4)
+				{
+					try 
+					{
+						Location potentialMove { static_cast<int8_t>(file + fileAdder), static_cast<int8_t>(rank + rankAdder) };
+						if(!board.lock()->HasPieceAtLocation(potentialMove))
+							newValidMoves.push_back(potentialMove);
+					} catch(const out_of_range&) { }
+				}
+			}
+		}
 		validMoves.swap(newValidMoves);
 	}
 	
 	void KnightMoveLogic::RegisterListeners()
 	{
+		auto boardPtr = board.lock();
 		for(Location location : validMoves)
-			board.AddListenerForSquare(*this, location);
+			boardPtr->AddListenerForSquare(*this, location);
 	}
 
 	void KnightMoveLogic::UnregisterListeners()
 	{
-		board.RemoveListener(*this);
+		board.lock()->RemoveListener(*this);
 	}
 }

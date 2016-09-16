@@ -14,8 +14,7 @@ namespace Chess
 	{
 	public:
 		Piece() = delete;
-		Piece(const IPlayer& _player, const Type& _type);
-		Piece(const IPlayer& _player, const Type& _type, IPieceMoveLogic& pieceMoveLogic);
+		Piece(const IPlayer& _player, const Type& _type, std::shared_ptr<IPieceMoveLogic> pieceMoveLogic);
 
 		const IPlayer& GetPlayer() const override;
 		const Type& GetType() const override;
@@ -32,6 +31,7 @@ namespace Chess
 	private:
 		const IPlayer& player;
 		Type type;
+		std::shared_ptr<IPieceMoveLogic> pieceMoveLogic;
 		std::weak_ptr<ISquare> square;
 	};
 

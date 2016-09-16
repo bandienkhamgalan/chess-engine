@@ -20,13 +20,13 @@ namespace Chess
 
 	}
 
-	Location::Location(const File& file, const uint8_t rank)
+	Location::Location(const File& file, const int8_t rank)
 		: Location(Location::fromFileAndRank(file, rank))
 	{
 
 	}
 
-	Location::Location(const uint8_t file, const uint8_t rank)
+	Location::Location(const int8_t file, const int8_t rank)
 		: Location(Location::fromFileAndRank(file, rank))
 	{
 
@@ -46,7 +46,7 @@ namespace Chess
 		return fromFileAndRank(static_cast<Location::File>(file), rank);
 	}
 
-	Location::AlgebraicLocation Location::fromFileAndRank(const uint8_t file, const uint8_t rank)
+	Location::AlgebraicLocation Location::fromFileAndRank(const int8_t file, const int8_t rank)
 	{
 		if(file < a || file > h)
 			throw out_of_range("Location::fromFileAndRank() : file param out of range");
@@ -100,7 +100,7 @@ namespace Chess
 		return static_cast<Location::File>(1 + (location - 1) % 8);
 	}
 
-	uint8_t Location::GetRank() const
+	int8_t Location::GetRank() const
 	{
 		return 8 - (location - 1) / 8;
 	}

@@ -31,7 +31,10 @@ namespace Chess
 		std::shared_ptr<ISquare> GetSquareAtLocation(const Location& location) const;
 		ISquare& UseSquareAtLocation(const Location& location) const;
 
+		void NotifyListenersForSquare(const Location& location);
+		std::vector<std::weak_ptr<IObservableBoardObservor>>& GetListenerListForSquare(const Location& location);
+
 		std::array<std::shared_ptr<ISquare>, 64> squares;
-		std::array<std::vector<IObservableBoardObservor>, 64> squareListeners;
+		std::array<std::vector<std::weak_ptr<IObservableBoardObservor>>, 64> squareListeners;
 	};
 }

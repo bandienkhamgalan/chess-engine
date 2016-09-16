@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <tuple>
+#include <map>
 #include "IObservableBoard.hpp"
 #include "IPlayer.hpp"
 #include "IPiece.hpp"
@@ -19,7 +20,7 @@ namespace Mocks
 		std::vector<Location>* HasPieceAtLocationParams;
 		std::vector<Location>* GetPieceAtLocationParams;
 		std::vector<std::tuple<std::shared_ptr<IPiece>, Location>>* AddPieceAtLocationParams;
-		bool HasPieceAtLocationReturnValue = true;
+		std::map<Location, bool> HasPieceAtLocationReturnValue;
 		std::unique_ptr<IPiece> GetPieceAtLocationReturnValue;
 		
 		/* IBoard methods */

@@ -1,18 +1,19 @@
 #include "Game.hpp"
 #include "Piece.hpp"
 #include "Helpers.hpp"
+#include "KnightMoveLogic.hpp"
 
 namespace Chess
 {
 	using namespace std;
 
-	Game::Game(shared_ptr<IBoard> board, std::shared_ptr<IPlayer> white, std::shared_ptr<IPlayer> black)
+	Game::Game(shared_ptr<IObservableBoard> board, std::shared_ptr<IPlayer> white, std::shared_ptr<IPlayer> black)
 		: white { white }, black { black }, board { board }, activeColor { IPlayer::White }
 	{
 		DefaultSetup();
 	}
 
-	Game::Game(std::shared_ptr<IBoard> board, std::shared_ptr<IPlayer> white, std::shared_ptr<IPlayer> black, std::shared_ptr<IO::IFENParser> parser)
+	Game::Game(std::shared_ptr<IObservableBoard> board, std::shared_ptr<IPlayer> white, std::shared_ptr<IPlayer> black, std::shared_ptr<IO::IFENParser> parser)
 		: white { white }, black { black }, board { board }, activeColor { IPlayer::UNDEFINED }
 	{
 		if(!parser)
@@ -107,7 +108,8 @@ namespace Chess
 	void Game::CreatePieceForPlayerAtLocation(IPlayer::Color color, Location location, IPiece::Type type)
 	{
 		IPlayer& player = color == IPlayer::White ? *white : *black;
-		shared_ptr<IPiece> piece = make_shared<Piece>(player, type);
+		shared_ptr<IPieceMoveLogic> pieceMoveLogic { make_shared<KnightMoveLogic>(board) };
+		shared_ptr<IPiece> piece = make_shared<Piece>(player, type, pieceMoveLogic);
 		player.AddPiece(piece);
 		board->AddPieceAtLocation(piece, location);
 	}

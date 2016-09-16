@@ -17,17 +17,18 @@ namespace IO
 	{
 	public:
 		FENParser() = delete;
-		FENParser(const std::string& FEN, std::shared_ptr<IFENParserDelegate> delegate = nullptr);
-		void SetDelegate(std::shared_ptr<IFENParserDelegate> delegate) override;
+		FENParser(const std::string& _FEN, std::shared_ptr<IFENParserDelegate> _delegate = nullptr);
+		void SetDelegate(std::shared_ptr<IFENParserDelegate> _delegate) override;
 		void BeginParsing() override;
 		bool operator==(const IFENParser& toCompare) override;
 		bool operator!=(const IFENParser& toCompare) override;
 	private:
+		const std::string FEN;
+		std::weak_ptr<IFENParserDelegate> delegate;
+		
 		void ParsePiecePlacement(const std::string& toParse);
 		void ParseActiveColor(const std::string& toParse);
 		bool ParsePiece(const char& c, Player::Color& color, IPiece::Type& type);
-		std::weak_ptr<IFENParserDelegate> delegate;
-		const std::string FEN;
 	};
 }
 }

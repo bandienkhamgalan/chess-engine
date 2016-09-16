@@ -8,6 +8,7 @@ namespace Chess
 	SimpleSquare::SimpleSquare(const Location &location)
 		: location { location }
 	{
+		
 	}
 
 
