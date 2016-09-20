@@ -67,21 +67,15 @@ namespace Chess
 	/* IObservableBoard methods */
 	void Board::AddListener(IObservableBoardObservor &observor)
 	{
-		Location::for_each([&observor](const Location& location) {
-			AddListenerForSquare(observor, location);
+		Location::for_each([&](const Location& location) {
+			this->AddListenerForSquare(observor, location);
 		});
 	}
 
 	void Board::AddListenerForSquare(IObservableBoardObservor &observor, const Location& location)
 	{
 		auto& listeners = GetListenerListForSquare(location);
-		
-		// Return early if listener is already registered
-		for(auto& existingObservor : listeners)
-			if(!existingObservor.expired() && existingObservor.lock() == &observor)
-				return;
-
-		listeners.emplace_back();
+		listeners.insert(&observor);
 	}
 	
 	void Board::RemoveListener(IObservableBoardObservor &observor)
@@ -107,15 +101,14 @@ namespace Chess
 		return *(GetSquareAtLocation(location));
 	}
 
-	std::vector<std::weak_ptr<IObservableBoardObservor>>& Board::GetListenerListForSquare(const Location& location)
+	std::set<IObservableBoardObservor*>& Board::GetListenerListForSquare(const Location& location)
 	{
-		return GetListenersForSquare(location);
+		return squareListeners[static_cast<int>(location) - static_cast<int>(Location::a8)];
 	}
 
 	void Board::NotifyListenersForSquare(const Location& location)
 	{
-		for(auto& observor : GetListenerListForSquare(location))
-			if(!observor.expired())
-				observor.lock()->SquareDidChange(*this, location);
+		for(IObservableBoardObservor* observor : GetListenerListForSquare(location))
+			observor->SquareDidChange(*this, location);
 	}
 }

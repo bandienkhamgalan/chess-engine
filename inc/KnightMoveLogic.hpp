@@ -20,7 +20,6 @@ namespace Chess
 
 		/* IObservableBoardObservor methods */
 		void SquareDidChange(IObservableBoard &board, const Location& location) override;
-
 	private:
 		std::weak_ptr<IObservableBoard> board;
 		std::weak_ptr<IPiece> piece;

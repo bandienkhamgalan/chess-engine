@@ -76,7 +76,7 @@ namespace Chess
 				}
 			}
 		}
-		validMoves.swap(newValidMoves);
+		validMoves = move(newValidMoves);
 	}
 	
 	void KnightMoveLogic::RegisterListeners()

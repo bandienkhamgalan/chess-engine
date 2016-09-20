@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <set>
 #include <memory>
 #include "IObservableBoard.hpp"
 #include "IObservableBoardObservor.hpp"
@@ -32,9 +33,9 @@ namespace Chess
 		ISquare& UseSquareAtLocation(const Location& location) const;
 
 		void NotifyListenersForSquare(const Location& location);
-		std::vector<std::weak_ptr<IObservableBoardObservor>>& GetListenerListForSquare(const Location& location);
+		std::set<IObservableBoardObservor*>& GetListenerListForSquare(const Location& location);
 
 		std::array<std::shared_ptr<ISquare>, 64> squares;
-		std::array<std::vector<std::weak_ptr<IObservableBoardObservor>>, 64> squareListeners;
+		std::array<std::set<IObservableBoardObservor*>, 64> squareListeners;
 	};
 }
