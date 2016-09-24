@@ -60,16 +60,6 @@ namespace IO
 		}
 	}
 
-	bool FENParser::operator==(const IFENParser& toCompare)
-	{
-		return this == &toCompare;
-	}
-
-	bool FENParser::operator!=(const IFENParser& toCompare)
-	{
-		return !this->operator==(toCompare);
-	}
-
 	/* Private methods */
 
 	void FENParser::ParsePiecePlacement(const string& toParse)

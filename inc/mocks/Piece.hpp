@@ -1,11 +1,11 @@
 #pragma once
-
+#include <memory>
+#include <vector>
+#include "gmock/gmock.h"
 #include "ISquare.hpp"
 #include "IPiece.hpp"
 #include "Player.hpp"
 #include "Location.hpp"
-#include <memory>
-#include <vector>
 
 namespace Chess
 {
@@ -15,30 +15,14 @@ namespace Mocks
 		: public IPiece
 	{
 	public:
-		Player player;
-		Type type;
-
-		Piece();
-		~Piece();
-		int* GetPlayerCalls;
-		const IPlayer& GetPlayer() const override;
-		int* GetTypeCalls;
-		const Type& GetType() const override;
-		int* GetLocationCalls = 0;
-		Location GetLocationReturnValue;
-		const Location& GetLocation() const override;
-		int* GetColorCalls;
-		const IPlayer::Color& GetColor() const override;
-		int* GetValidMovesCalls = 0;
-		std::vector<Location> GetValidMovesReturnValue;
-		const std::vector<Location>& GetValidMoves() const override;
-		int* IsInPlayCalls;
-		bool IsInPlayReturnValue = false;
-		bool IsInPlay() const override;
-		int RemoveFromPlayCalls = 0;
-		void RemoveFromPlay() override;
-		std::vector<std::shared_ptr<ISquare>> SetLocationParams;
-		void SetLocation(std::shared_ptr<ISquare> newSquare) override;
+		MOCK_CONST_METHOD0(GetPlayer, const IPlayer&());
+		MOCK_CONST_METHOD0(GetType, const Type&());
+		MOCK_CONST_METHOD0(GetLocation, const Location&());
+		MOCK_CONST_METHOD0(GetColor, const IPlayer::Color&());
+		MOCK_CONST_METHOD0(GetValidMoves, const std::vector<Location>&());
+		MOCK_CONST_METHOD0(IsInPlay, bool());
+		MOCK_METHOD0(RemoveFromPlay, void());
+		MOCK_METHOD1(SetLocation, void(std::shared_ptr<ISquare>));
 	};
 }
 }

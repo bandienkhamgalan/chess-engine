@@ -5,11 +5,17 @@ namespace Chess
 {
 	using namespace std;
 
-	KnightMoveLogic::KnightMoveLogic(shared_ptr<IObservableBoard> _board, shared_ptr<IPiece> _piece)
+	KnightMoveLogic::KnightMoveLogic(weak_ptr<IObservableBoard> _board)
 		: board(_board)
 	{
-		if(_piece)
-			SetPiece(_piece);
+
+	}
+
+	KnightMoveLogic::KnightMoveLogic(weak_ptr<IObservableBoard> _board, weak_ptr<IPiece> _piece)
+		: board(_board), piece(_piece)
+	{
+		if(piece.expired())
+			throw invalid_argument("KnightMoveLogic::KnightMoveLogic() : piece cannot be null");
 
 		// RecomputeValidMoves();
 		// RegisterListeners();
@@ -23,9 +29,9 @@ namespace Chess
 
 	/* Public methods */
 
-	void KnightMoveLogic::SetPiece(std::shared_ptr<IPiece> toSet)
+	void KnightMoveLogic::SetPiece(weak_ptr<IPiece> toSet)
 	{
-		if(!toSet)
+		if(toSet.expired())
 			throw invalid_argument("Piece::SetPiece() : piece cannot be null");
 		if(!piece.expired())
 			throw runtime_error("Piece::SetPiece() : piece already set");
@@ -33,7 +39,7 @@ namespace Chess
 		piece = toSet;
 	}
 
-	const std::vector<Location>& KnightMoveLogic::GetValidMoves()
+	const vector<Location>& KnightMoveLogic::GetValidMoves()
 	{
 		RecomputeValidMoves();
 		return validMoves;

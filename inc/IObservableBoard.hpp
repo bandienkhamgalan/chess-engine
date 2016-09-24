@@ -1,10 +1,10 @@
 #pragma once
 #include "IBoard.hpp"
 #include "Location.hpp"
+#include "IObservableBoardObservor.hpp"
 
 namespace Chess
 {
-	class IObservableBoardObservor;
 	class IObservableBoard
 		: public IBoard
 	{

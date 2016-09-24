@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
-#include <set>
+#include <map>
+#include <vector>
 #include <memory>
 #include "IObservableBoard.hpp"
 #include "IObservableBoardObservor.hpp"
@@ -16,10 +17,10 @@ namespace Chess
 	{
 	public:
 		/* IBoard methods */
-		bool HasPieceAtLocation(const Location& location) const override;
-		IPiece& GetPieceAtLocation(const Location& location) const override;
 		Board() = delete;
 		Board(ISquareFactory& squareFactory);
+		bool HasPieceAtLocation(const Location& location) const override;
+		const IPiece& GetPieceAtLocation(const Location& location) const override;
 		void AddPieceAtLocation(std::shared_ptr<IPiece> piece, const Location& location) override;
 		void MovePieceToLocation(std::shared_ptr<IPiece> piece, const Location& location) override;
 		
@@ -29,13 +30,14 @@ namespace Chess
 		void RemoveListener(IObservableBoardObservor &observor) override;
 		void RemoveListenerForSquare(IObservableBoardObservor &observor, const Location& location) override;
 	private:
+		std::array<std::shared_ptr<ISquare>, 64> squares;
+		std::map<Location, std::vector<IObservableBoardObservor*>> squareListeners;
+
 		std::shared_ptr<ISquare> GetSquareAtLocation(const Location& location) const;
 		ISquare& UseSquareAtLocation(const Location& location) const;
 
+		/* IObservableBoard helper methods */
 		void NotifyListenersForSquare(const Location& location);
-		std::set<IObservableBoardObservor*>& GetListenerListForSquare(const Location& location);
-
-		std::array<std::shared_ptr<ISquare>, 64> squares;
-		std::array<std::set<IObservableBoardObservor*>, 64> squareListeners;
+		std::vector<IObservableBoardObservor*>& GetListenerListForSquare(const Location& location);
 	};
 }

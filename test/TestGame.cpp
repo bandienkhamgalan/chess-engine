@@ -1,142 +1,165 @@
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 #include "Game.hpp"
-#include "mocks/Board.hpp"
 #include "Player.hpp"
 #include "IFENParser.hpp"
+#include "mocks/Board.hpp"
+#include "mocks/Piece.hpp"
 #include "mocks/FENParser.hpp"
+#include "mocks/PieceFactory.hpp"
+#include "mocks/Player.hpp"
 #include "Location.hpp"
-#include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_SUITE(Game_)
+using namespace std;
+using namespace Chess;
+using testing::NiceMock;
+using testing::Eq;
+using testing::ByMove;
+using testing::Return;
+using testing::ReturnRef;
+using testing::AllOf;
+using testing::_;
 
-	using namespace std;
-	using namespace Chess;
+class Game_
+	: public testing::Test
+{
+public:
+	shared_ptr<NiceMock<Mocks::Board>> board;
+	shared_ptr<NiceMock<Mocks::PieceFactory>> pieceFactory;
+	shared_ptr<NiceMock<Mocks::Player>> white;
+	shared_ptr<NiceMock<Mocks::Player>> black;
+	shared_ptr<Game> game;
 
-	struct GameWithParserTestFixture
+	virtual void InitializeBoardAndPlayers()
 	{
-		shared_ptr<Mocks::Board> board;
-		shared_ptr<IPlayer> white;
-		shared_ptr<IPlayer> black;
-		shared_ptr<IO::IFENParser> parser;
-		shared_ptr<Game> game;
+		board = make_shared<NiceMock<Mocks::Board>>();
+		pieceFactory = make_shared<NiceMock<Mocks::PieceFactory>>();
+		white = make_shared<NiceMock<Mocks::Player>>();
+		black = make_shared<NiceMock<Mocks::Player>>();
+	}
 
-		GameWithParserTestFixture()
-			:	board(make_shared<Mocks::Board>()),
-				white(make_shared<Player>(IPlayer::White)),
-				black(make_shared<Player>(IPlayer::Black)),
-				parser(make_shared<IO::Mocks::FENParser>()),
-				game(make_shared<Game>(board, white, black, parser)) { }
-	};
-
-	struct GameTestFixture
+	virtual void SetUp()
 	{
-		shared_ptr<Mocks::Board> board;
-		shared_ptr<IPlayer> white;
-		shared_ptr<IPlayer> black;
-		shared_ptr<Game> game;
+		InitializeBoardAndPlayers();
+	}
 
-		GameTestFixture()
-			:	board(make_shared<Mocks::Board>()),
-				white(make_shared<Player>(IPlayer::White)),
-				black(make_shared<Player>(IPlayer::Black)),
-				game(make_shared<Game>(board, white, black)) { }
-	};
+	virtual void InitializeGame()
+	{
+		game = make_shared<Game>(board, pieceFactory, white, black);
+	}
+};
 
-	BOOST_AUTO_TEST_SUITE(Constructor_Default)
-	
-		BOOST_FIXTURE_TEST_CASE(InitializesBoardPlayerPiecesAndActiveColor, GameTestFixture)
-		{
-			/* Active color */
-			BOOST_CHECK_EQUAL(game->GetActiveColor(), Player::White);
+class Game_WithParser_
+	: public Game_
+{
+public:
+	shared_ptr<NiceMock<IO::Mocks::FENParser>> parser;
 
-			/* Piece count */
-			BOOST_CHECK_EQUAL(game->GetWhitePlayer().GetPieces().size(), 16);
-			BOOST_CHECK_EQUAL(game->GetBlackPlayer().GetPieces().size(), 16);
-			BOOST_CHECK_EQUAL(board->AddPieceAtLocationParams->size(), 32);
+	virtual void SetUp()
+	{
+		InitializeBoardAndPlayers();
+		parser = make_shared<NiceMock<IO::Mocks::FENParser>>();
+	}
 
-			/* Black pieces */
-			IPiece::Type types[] = { IPiece::Rook, IPiece::Knight, IPiece::Bishop, IPiece::Queen, IPiece::King, IPiece::Bishop, IPiece::Knight, IPiece::Rook };
-			for(int file = 1 ; file <= 8 ; file++)
-				BOOST_CHECK_EQUAL(board->AddPieceAtLocationCalls(Player::Black, types[file - 1], Location(file, 8)), 1);
-			for(int file = 1 ; file <= 8 ; file++)
-				BOOST_CHECK_EQUAL(board->AddPieceAtLocationCalls(Player::Black, IPiece::Pawn, Location(file, 7)), 1);
+	virtual void InitializeGame()
+	{
+		game = make_shared<Game>(board, pieceFactory, white, black, parser);
+	}
+};
 
-			/* White pieces */
-			for(int file = 1 ; file <= 8 ; file++)
-				BOOST_CHECK_EQUAL(board->AddPieceAtLocationCalls(Player::White, types[file - 1], Location(file, 1)), 1);
-			for(int file = 1 ; file <= 8 ; file++)
-				BOOST_CHECK_EQUAL(board->AddPieceAtLocationCalls(Player::White, IPiece::Pawn, Location(file, 2)), 1);
-		}
+TEST_F(Game_, Constructor_DefaultBoardSetup)
+{
+	/* Adds pieces to board */
+	for(int file = 1 ; file <= 8 ; file++)
+	{
+		EXPECT_CALL(*board, AddPieceAtLocation(_, Eq(Location(file, 8))))
+			.Times(1);
+		EXPECT_CALL(*board, AddPieceAtLocation(_, Eq(Location(file, 7))))
+			.Times(1);
+		for(int rank = 6 ; rank >= 3 ; rank--)
+			EXPECT_CALL(*board, AddPieceAtLocation(_, Eq(Location(file, rank))))
+				.Times(0);
+		EXPECT_CALL(*board, AddPieceAtLocation(_, Eq(Location(file, 2))))
+			.Times(1);
+		EXPECT_CALL(*board, AddPieceAtLocation(_, Eq(Location(file, 1))))
+			.Times(1);
+	}
 
-	BOOST_AUTO_TEST_SUITE_END()
+	EXPECT_CALL(*black, AddPiece(_))
+		.Times(16);
+	EXPECT_CALL(*white, AddPiece(_))
+		.Times(16);
 
-	BOOST_AUTO_TEST_SUITE(Constructor_Parser)
-	
-		BOOST_FIXTURE_TEST_CASE(DoesNotInitializeBoard, GameWithParserTestFixture)
-		{
-			/* Piece numbers */
-			BOOST_CHECK_EQUAL(game->GetWhitePlayer().GetPieces().size(), 0);
-			BOOST_CHECK_EQUAL(game->GetBlackPlayer().GetPieces().size(), 0);
-			BOOST_CHECK_EQUAL(board->AddPieceAtLocationParams->size(), 0);
-		}
+	InitializeGame();
 
-	BOOST_AUTO_TEST_SUITE_END()
+	/* Sets white to play */
+	EXPECT_EQ(game->GetActiveColor(), Player::White);
+}
 
-	BOOST_AUTO_TEST_SUITE(GetActiveColor)
-	
-		BOOST_FIXTURE_TEST_CASE(Uninitialized_ThrowsRuntimeErrorException, GameWithParserTestFixture)
-		{
-			/* Piece numbers */
-			BOOST_CHECK_THROW(game->GetActiveColor(), runtime_error);
-		}
+TEST_F(Game_WithParser_, DoesNotInitializeBoard)
+{
+	EXPECT_CALL(*black, AddPiece(_))
+		.Times(0);
+	EXPECT_CALL(*white, AddPiece(_))
+		.Times(0);
+	EXPECT_CALL(*board, AddPieceAtLocation(_, _))
+		.Times(0);
 
-	BOOST_AUTO_TEST_SUITE_END()
+	InitializeGame();
+} 
 
-	BOOST_AUTO_TEST_SUITE(IFENParserDelegate_)
+TEST_F(Game_WithParser_, Uninitialized_ThrowsRuntimeErrorException)
+{
+	InitializeGame();
+	EXPECT_THROW(game->GetActiveColor(), runtime_error);
+}
 
-		BOOST_AUTO_TEST_CASE(UnsolicitedParser_ThrowsInvalidArgumentException)
-		{
-			shared_ptr<IO::IFENParser> parser = make_shared<IO::Mocks::FENParser>();
-			auto game = make_shared<Game>(make_shared<Mocks::Board>(), make_shared<Player>(Player::White), make_shared<Player>(Player::Black));
-			BOOST_CHECK_THROW(game->FENParserError(*parser, "test"), invalid_argument);
-			BOOST_CHECK_THROW(game->FENParserPiece(*parser, Location::a1, IPlayer::White, IPiece::Rook), invalid_argument);
-			BOOST_CHECK_THROW(game->FENParserActiveColor(*parser, IPlayer::White), invalid_argument);
-			BOOST_CHECK_THROW(game->FENParserCompleted(*parser), invalid_argument);			
-		}
+TEST_F(Game_WithParser_, IFENParserDelegate_UnsolicitedParser_ThrowsInvalidArgumentException)
+{
+	InitializeGame();
+	shared_ptr<IO::IFENParser> parser2 = make_shared<IO::Mocks::FENParser>();
+	EXPECT_THROW(game->FENParserError(*parser2, "test"), invalid_argument);
+	EXPECT_THROW(game->FENParserPiece(*parser2, Location::a1, IPlayer::White, IPiece::Rook), invalid_argument);
+	EXPECT_THROW(game->FENParserActiveColor(*parser2, IPlayer::White), invalid_argument);
+	EXPECT_THROW(game->FENParserCompleted(*parser2), invalid_argument);		
+}
 
-		BOOST_AUTO_TEST_SUITE(FENParserError)
+TEST_F(Game_WithParser_, IFENParserDelegate_FENParserError_ThrowsRuntimeErrorException)
+{
+	InitializeGame();
+	EXPECT_THROW(game->FENParserError(*parser, "test"), runtime_error);	
+}
 
-			BOOST_FIXTURE_TEST_CASE(ThrowsRuntimeErrorException, GameWithParserTestFixture)
-			{
-				BOOST_CHECK_THROW(game->FENParserError(*parser, "test"), runtime_error);
-			}
+MATCHER_P(AddressEq, address, "")
+{
+	return &arg == address;
+}
 
-		BOOST_AUTO_TEST_SUITE_END()
+MATCHER_P(WeakPtrAddressEq, address, "")
+{
+	return arg.lock().get() == address;
+}
 
-		BOOST_AUTO_TEST_SUITE(FENParserPiece)
+MATCHER_P(SharedPtrAddressEq, address, "")
+{
+	return arg.get() == address;
+}
 
-			BOOST_FIXTURE_TEST_CASE(CallsBoard_AddPieceAtLocation, GameWithParserTestFixture)
-			{
-				game->FENParserPiece(*parser, Location::a1, Player::White, IPiece::Pawn);
-				BOOST_REQUIRE_EQUAL(board->AddPieceAtLocationParams->size(), 1);
-				shared_ptr<IPiece> addedPiece = get<0>((*board->AddPieceAtLocationParams)[0]);
-				const Location& location = get<1>((*board->AddPieceAtLocationParams)[0]);
-				BOOST_CHECK_EQUAL(addedPiece->GetColor(), Player::White);
-				BOOST_CHECK_EQUAL(addedPiece->GetType(), IPiece::Pawn);	
-				BOOST_CHECK_EQUAL(location, Location::a1);				
-			}
+TEST_F(Game_WithParser_, IFENParserDelegate_FENParserPiece_CreatesPieceAndAddsPieceToBoardAndPlayer)
+{
+	auto piece = new NiceMock<Mocks::Piece>();
+	EXPECT_CALL(*pieceFactory, makePiece(WeakPtrAddressEq(board.get()), AddressEq(white.get()), Eq(IPiece::Queen)))
+		.Times(1)
+		.WillOnce(Return(ByMove(unique_ptr<IPiece>(piece))));
+	EXPECT_CALL(*board, AddPieceAtLocation(SharedPtrAddressEq(piece), Eq(Location::e7)));
 
-		BOOST_AUTO_TEST_SUITE_END()
+	InitializeGame();
+	game->FENParserPiece(*parser, Location::e7, Player::White, IPiece::Queen);
+}
 
-		BOOST_AUTO_TEST_SUITE(FENParserActiveColor)
-
-			BOOST_FIXTURE_TEST_CASE(SetsActiveColor, GameWithParserTestFixture)
-			{
-				game->FENParserActiveColor(*parser, IPlayer::White);
-				BOOST_CHECK_EQUAL(game->GetActiveColor(), IPlayer::White);				
-			}
-
-		BOOST_AUTO_TEST_SUITE_END()
-
-	BOOST_AUTO_TEST_SUITE_END()
-
-BOOST_AUTO_TEST_SUITE_END()
+TEST_F(Game_WithParser_, IFENParserDelegate_FENParserActiveColor_SetsActiveColor)
+{
+	InitializeGame();
+	game->FENParserActiveColor(*parser, IPlayer::Black);
+	EXPECT_EQ(game->GetActiveColor(), IPlayer::Black);				
+}

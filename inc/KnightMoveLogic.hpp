@@ -11,10 +11,11 @@ namespace Chess
 		: public IObservableBoardObservor, public IPieceMoveLogic
 	{
 	public: 
-		KnightMoveLogic(std::shared_ptr<IObservableBoard> _board, std::shared_ptr<IPiece> _piece = nullptr);
+		KnightMoveLogic(std::weak_ptr<IObservableBoard> _board);
+		KnightMoveLogic(std::weak_ptr<IObservableBoard> _board, std::weak_ptr<IPiece> _piece);
 		~KnightMoveLogic();
 		
-		void SetPiece(std::shared_ptr<IPiece> toSet) override;
+		void SetPiece(std::weak_ptr<IPiece> toSet) override;
 		
 		const std::vector<Location>& GetValidMoves() override;
 

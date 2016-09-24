@@ -22,7 +22,7 @@ namespace Chess
 		return UseSquareAtLocation(location).HasPiece();
 	}
 
-	IPiece& Board::GetPieceAtLocation(const Location& location) const
+	const IPiece& Board::GetPieceAtLocation(const Location& location) const
 	{
 		return UseSquareAtLocation(location).GetPiece();
 	}
@@ -30,10 +30,13 @@ namespace Chess
 	void Board::AddPieceAtLocation(shared_ptr<IPiece> piece, const Location& location)
 	{
 		if(!piece)
-			throw invalid_argument("Board::AddPiece : piece is null");
+			throw invalid_argument("Board::AddPiece() : piece is null");
+
+		if(piece->IsInPlay())
+			throw invalid_argument("Board::AddPiece() : piece already in play cannot be added");
 
 		if(HasPieceAtLocation(location))
-			throw invalid_argument("Board::AddPiece : square already occupied");
+			throw invalid_argument("Board::AddPiece() : square already occupied");
 
 		auto square = GetSquareAtLocation(location);
 		square->AssignPiece(piece);
@@ -75,7 +78,10 @@ namespace Chess
 	void Board::AddListenerForSquare(IObservableBoardObservor &observor, const Location& location)
 	{
 		auto& listeners = GetListenerListForSquare(location);
-		listeners.insert(&observor);
+		for(IObservableBoardObservor* existingObservor : listeners)
+			if(existingObservor == &observor)
+				return;
+		listeners.push_back(&observor);
 	}
 	
 	void Board::RemoveListener(IObservableBoardObservor &observor)
@@ -101,9 +107,9 @@ namespace Chess
 		return *(GetSquareAtLocation(location));
 	}
 
-	std::set<IObservableBoardObservor*>& Board::GetListenerListForSquare(const Location& location)
+	std::vector<IObservableBoardObservor*>& Board::GetListenerListForSquare(const Location& location)
 	{
-		return squareListeners[static_cast<int>(location) - static_cast<int>(Location::a8)];
+		return squareListeners[location];
 	}
 
 	void Board::NotifyListenersForSquare(const Location& location)

@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "gmock/gmock.h"
 #include "IFENParser.hpp"
 
 namespace Chess
@@ -12,10 +13,8 @@ namespace Mocks
 		: public IFENParser
 	{
 	public:
-		void SetDelegate(std::shared_ptr<IFENParserDelegate> delegate) override;
-		void BeginParsing() override;
-		bool operator==(const IFENParser& toCompare) override;
-		bool operator!=(const IFENParser& toCompare) override;
+		MOCK_METHOD1(SetDelegate, void(std::shared_ptr<IFENParserDelegate>));
+		MOCK_METHOD0(BeginParsing, void());
 	};
 }
 }

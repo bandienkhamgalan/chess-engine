@@ -1,10 +1,10 @@
 #pragma once
-
+#include <map>
+#include <memory>
+#include "gmock/gmock.h"
 #include "ISquareFactory.hpp"
 #include "ISquare.hpp"
 #include "Location.hpp"
-#include <map>
-#include <memory>
 
 namespace Chess
 {
@@ -14,8 +14,7 @@ namespace Mocks
 		: public ISquareFactory
 	{
 	public:
-		std::map<Location, int> makeSquareCalls;
-		std::unique_ptr<ISquare> makeSquare(const Location& location) override;
+		MOCK_METHOD1(makeSquare, std::unique_ptr<ISquare>(const Location&));
 	};
 }
 }

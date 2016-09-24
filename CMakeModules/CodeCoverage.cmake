@@ -139,19 +139,22 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname)
 	ADD_CUSTOM_TARGET(${_targetname}
 
 		# Cleanup lcov
-		${LCOV_PATH} --directory . --zerocounters
+		${LCOV_PATH} --directory . --zerocounters > /dev/null 2>&1
 
 		# Run tests
 		COMMAND ${test_command} ${ARGV3}
 
 		# Capturing lcov counters and generating report
-		COMMAND ${LCOV_PATH} --directory . --capture --output-file ${coverage_info}
-		COMMAND ${LCOV_PATH} --remove ${coverage_info} 'tests/*' '/usr/*' --output-file ${coverage_cleaned}
-		COMMAND ${GENHTML_PATH} -o ${_outputname} ${coverage_cleaned}
-		COMMAND ${CMAKE_COMMAND} -E remove ${coverage_info} ${coverage_cleaned}
+		COMMAND echo "Capturing coverage data..."
+		COMMAND ${LCOV_PATH} --directory . --capture --output-file ${coverage_info} > /dev/null 2>&1
+		COMMAND ${LCOV_PATH} --remove ${coverage_info} 'test/*' 'src/mocks/*' 'inc/*' '/usr/*' --output-file ${coverage_cleaned} > /dev/null 2>&1
+		COMMAND ${LCOV_PATH} --summary ${coverage_info}
+		COMMAND echo "Generating HTML..."
+		COMMAND ${GENHTML_PATH} -o ${_outputname} ${coverage_cleaned} > /dev/null 2>&1
+		COMMAND echo "Cleaning up..."
+		COMMAND ${CMAKE_COMMAND} -E remove ${coverage_info} ${coverage_cleaned} > /dev/null 2>&1
 
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-		COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters and generating report."
 	)
 
 ENDFUNCTION() # SETUP_TARGET_FOR_COVERAGE

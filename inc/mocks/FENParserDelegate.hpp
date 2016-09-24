@@ -1,12 +1,12 @@
 #pragma once
-
+#include <vector>
+#include <tuple>
+#include "gmock/gmock.h"
 #include "IFENParserDelegate.hpp"
 #include "IFENParser.hpp"
 #include "Player.hpp"
 #include "IPiece.hpp"
 #include "Location.hpp"
-#include <vector>
-#include <tuple>
 
 namespace Chess
 {
@@ -18,17 +18,10 @@ namespace Mocks
 		: public IFENParserDelegate
 	{
 	public:
-		std::vector<std::tuple<IFENParser*, std::string>> FENParserErrorParams;
-		void FENParserError(IFENParser& parser, const std::string& error) override;
-
-		std::vector<std::tuple<IFENParser*, Location, IPlayer::Color, IPiece::Type>> FENParserPieceParams;
-		void FENParserPiece(IFENParser& parser, Location location, IPlayer::Color color, IPiece::Type type) override;
-
-		std::vector<std::tuple<IFENParser*, IPlayer::Color>> FENParserActiveColorParams;
-		void FENParserActiveColor(IFENParser& parser, IPlayer::Color color) override;
-
-		std::vector<std::tuple<IFENParser*>> FENParserCompletedParams; 
-		void FENParserCompleted(IFENParser& parser) override;
+		MOCK_METHOD2(FENParserError, void(IFENParser&, const std::string&));
+		MOCK_METHOD4(FENParserPiece, void(IFENParser&, Location, IPlayer::Color, IPiece::Type));
+		MOCK_METHOD2(FENParserActiveColor, void(IFENParser&, IPlayer::Color));
+		MOCK_METHOD1(FENParserCompleted, void(IFENParser&));
 	};
 }
 }

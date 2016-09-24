@@ -1,20 +1,19 @@
 #include "Game.hpp"
 #include "Piece.hpp"
 #include "Helpers.hpp"
-#include "KnightMoveLogic.hpp"
 
 namespace Chess
 {
 	using namespace std;
 
-	Game::Game(shared_ptr<IObservableBoard> board, std::shared_ptr<IPlayer> white, std::shared_ptr<IPlayer> black)
-		: white { white }, black { black }, board { board }, activeColor { IPlayer::White }
+	Game::Game(shared_ptr<IObservableBoard> board, shared_ptr<IPieceFactory> pieceFactory, std::shared_ptr<IPlayer> white, std::shared_ptr<IPlayer> black)
+		: board(board), pieceFactory(pieceFactory), white(white), black(black), activeColor(IPlayer::White)
 	{
 		DefaultSetup();
 	}
 
-	Game::Game(std::shared_ptr<IObservableBoard> board, std::shared_ptr<IPlayer> white, std::shared_ptr<IPlayer> black, std::shared_ptr<IO::IFENParser> parser)
-		: white { white }, black { black }, board { board }, activeColor { IPlayer::UNDEFINED }
+	Game::Game(std::shared_ptr<IObservableBoard> board, shared_ptr<IPieceFactory> pieceFactory, std::shared_ptr<IPlayer> white, std::shared_ptr<IPlayer> black, std::shared_ptr<IO::IFENParser> parser)
+		: board(board), pieceFactory(pieceFactory), white(white), black(black), activeColor(IPlayer::UNDEFINED)
 	{
 		if(!parser)
 			throw invalid_argument("Game::Game() : must pass in non-null parser object");
@@ -105,12 +104,21 @@ namespace Chess
 		}
 	}
 
-	void Game::CreatePieceForPlayerAtLocation(IPlayer::Color color, Location location, IPiece::Type type)
+	void Game::CreatePieceForPlayerAtLocation(const IPlayer::Color& color, const Location& location, const IPiece::Type& type)
 	{
-		IPlayer& player = color == IPlayer::White ? *white : *black;
-		shared_ptr<IPieceMoveLogic> pieceMoveLogic { make_shared<KnightMoveLogic>(board) };
-		shared_ptr<IPiece> piece = make_shared<Piece>(player, type, pieceMoveLogic);
+		IPlayer& player = GetPlayer(color);
+		shared_ptr<IPiece> piece = pieceFactory->makePiece(board, player, type);
 		player.AddPiece(piece);
 		board->AddPieceAtLocation(piece, location);
+	}
+
+	IPlayer& Game::GetPlayer(const IPlayer::Color& color)
+	{
+		if(color == IPlayer::White)
+			return *white;
+		else if(color == IPlayer::Black)
+			return *black;
+		else
+			throw invalid_argument("Game::GetPlayer() : color must be White or Black");
 	}
 }
