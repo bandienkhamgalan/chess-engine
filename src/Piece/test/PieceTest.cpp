@@ -8,7 +8,7 @@
 #include "Piece.hpp"
 #include "Location.hpp"
 #include "Helpers.hpp"
-#include "SimpleSquare.hpp"
+#include "ObservableSquare.hpp"
 #include "mocks/PieceMoveLogic.hpp"
 
 using namespace std;
@@ -35,7 +35,7 @@ TEST(Piece_GetLocation, InPlay_ReturnsCurrentLocation)
 {
 	Player player { Player::White };
 	Piece piece { player, IPiece::Knight, make_shared<Mocks::PieceMoveLogic>() };
-	shared_ptr<ISquare> square = make_shared<SimpleSquare>(Location::a2);
+	shared_ptr<ISquare> square = make_shared<ObservableSquare>(Location::a2);
 	piece.SetLocation(square);
 	ASSERT_EQ(piece.IsInPlay(), true);
 	EXPECT_EQ(piece.GetLocation(), square->GetLocation());
@@ -53,7 +53,7 @@ TEST(Piece_SetLocation, InPlayAndNonNullLocation_SetsNewLocation)
 {
 	Player player { Player::White };
 	Piece piece { player, IPiece::Knight, make_shared<Mocks::PieceMoveLogic>() };
-	shared_ptr<ISquare> square = make_shared<SimpleSquare>(Location::a2);
+	shared_ptr<ISquare> square = make_shared<ObservableSquare>(Location::a2);
 	piece.SetLocation(square);
 	EXPECT_EQ(piece.GetLocation(), square->GetLocation());
 }
@@ -62,7 +62,7 @@ TEST(Piece_SetLocation, InPlayAndNullLocation_ThrowsRuntimeErrorException)
 {
 	Player player { Player::White };
 	Piece piece { player, Piece::Knight, make_shared<Mocks::PieceMoveLogic>() };
-	shared_ptr<ISquare> square = make_shared<SimpleSquare>(Location::a2);
+	shared_ptr<ISquare> square = make_shared<ObservableSquare>(Location::a2);
 	piece.SetLocation(square);
 	EXPECT_THROW(piece.SetLocation(shared_ptr<ISquare>(nullptr)), runtime_error);
 }
@@ -87,7 +87,7 @@ TEST(Piece_IsInPlay, NonNullLocation_ReturnsTrue)
 {
 	Player player { Player::White };
 	Piece piece { player, IPiece::Knight, make_shared<Mocks::PieceMoveLogic>() };
-	shared_ptr<ISquare> square = make_shared<SimpleSquare>(Location::a1);
+	shared_ptr<ISquare> square = make_shared<ObservableSquare>(Location::a1);
 	piece.SetLocation(square);
 	EXPECT_EQ(piece.IsInPlay(), true);
 }
@@ -96,7 +96,7 @@ TEST(Piece_RemoveFromPlay, Success)
 {
 	Player player { Player::White };
 	Piece piece { player, IPiece::Knight, make_shared<Mocks::PieceMoveLogic>() };
-	shared_ptr<ISquare> square = make_shared<SimpleSquare>(Location::a1);
+	shared_ptr<ISquare> square = make_shared<ObservableSquare>(Location::a1);
 	piece.SetLocation(square);
 	EXPECT_EQ(piece.IsInPlay(), true);
 	piece.RemoveFromPlay();
@@ -129,7 +129,7 @@ TEST(Piece_operator_string, NonNullLocation_ReturnsTypeAndLocation)
 {
 	Player player { Player::White };
 	Piece piece { player, IPiece::Queen, make_shared<Mocks::PieceMoveLogic>() };
-	shared_ptr<ISquare> square = make_shared<SimpleSquare>(Location::f4);
+	shared_ptr<ISquare> square = make_shared<ObservableSquare>(Location::f4);
 	piece.SetLocation(square);
 	EXPECT_EQ(Helpers::sprint(piece), "Queen at F4");
 }

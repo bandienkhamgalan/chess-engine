@@ -43,7 +43,7 @@ namespace Chess
 		};
 
 		template <typename Func>
-		static void for_each(Func callback)
+		static inline void for_each(Func callback)
 		{
 			for(int current = static_cast<int>(AlgebraicLocation::a8) ; current <= static_cast<int>(AlgebraicLocation::h1) ; current++ )
 			{

@@ -4,6 +4,7 @@
 #include <map>
 #include "gmock/gmock.h"
 #include "IObservableBoard.hpp"
+#include "IObservableSquare.hpp"
 #include "IPlayer.hpp"
 #include "IPiece.hpp"
 #include "Location.hpp"
@@ -29,10 +30,10 @@ namespace Mocks
 		MOCK_METHOD2(MovePieceToLocation, void(std::shared_ptr<IPiece>, const Location&));
 		
 		/* IObservableBoard methods */
-		MOCK_METHOD1(AddListener, void(IObservableBoardObservor&));
-		MOCK_METHOD2(AddListenerForSquare, void(IObservableBoardObservor&, const Location&));
-		MOCK_METHOD1(RemoveListener, void(IObservableBoardObservor&));
-		MOCK_METHOD2(RemoveListenerForSquare, void(IObservableBoardObservor&, const Location&));
+		MOCK_METHOD2(AddListener, void(IObservableBoardObservor*, const IObservableSquare::Event&));
+		MOCK_METHOD3(AddListenerForSquare, void(IObservableBoardObservor*, const Location&, const IObservableSquare::Event&));
+		MOCK_METHOD2(RemoveListener, void(IObservableBoardObservor*, const IObservableSquare::Event&));
+		MOCK_METHOD3(RemoveListenerForSquare, void(IObservableBoardObservor*, const Location&, const IObservableSquare::Event&));
 	};
 }
 }

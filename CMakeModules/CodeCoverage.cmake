@@ -146,13 +146,13 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname)
 
 		# Capturing lcov counters and generating report
 		COMMAND echo "Capturing coverage data..."
-		COMMAND ${LCOV_PATH} --directory . --capture --output-file ${coverage_info} > /dev/null 2>&1
-		COMMAND ${LCOV_PATH} --remove ${coverage_info} 'test/*' 'src/mocks/*' 'inc/*' '/usr/*' --output-file ${coverage_cleaned} > /dev/null 2>&1
+		COMMAND ${LCOV_PATH} --directory . --capture --output-file ${coverage_info}# > /dev/null 2>&1
+		COMMAND ${LCOV_PATH} --remove ${coverage_info} '/usr/*' --output-file ${coverage_cleaned}# > /dev/null 2>&1
 		COMMAND ${LCOV_PATH} --summary ${coverage_info}
 		COMMAND echo "Generating HTML..."
-		COMMAND ${GENHTML_PATH} -o ${_outputname} ${coverage_cleaned} > /dev/null 2>&1
+		COMMAND ${GENHTML_PATH} -o ${_outputname} ${coverage_cleaned}# > /dev/null 2>&1
 		COMMAND echo "Cleaning up..."
-		COMMAND ${CMAKE_COMMAND} -E remove ${coverage_info} ${coverage_cleaned} > /dev/null 2>&1
+		COMMAND ${CMAKE_COMMAND} -E remove ${coverage_info} ${coverage_cleaned}# > /dev/null 2>&1
 
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)

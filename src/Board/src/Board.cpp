@@ -1,4 +1,5 @@
 #include "Board.hpp"
+#include "IObservableSquare.hpp"
 #include <stdexcept>
 #include <string>
 
@@ -8,7 +9,7 @@ namespace Chess
 
 	/* IBoard methods */
 
-	Board::Board(ISquareFactory& squareFactory)
+	Board::Board(IObservableSquareFactory& squareFactory)
 	{
 		int currentSquareIndex = 0;
 		Location::for_each( [&](Location currentLocation)
@@ -41,7 +42,6 @@ namespace Chess
 		auto square = GetSquareAtLocation(location);
 		square->AssignPiece(piece);
 		piece->SetLocation(square);
-		NotifyListenersForSquare(location);
 	}
 
 	void Board::MovePieceToLocation(std::shared_ptr<IPiece> piece, const Location& location) 
@@ -62,59 +62,58 @@ namespace Chess
 		piece->SetLocation(newSquare);
 		oldSquare->RemovePiece();
 		newSquare->AssignPiece(piece);
+	}
 
-		NotifyListenersForSquare(oldSquare->GetLocation());
-		NotifyListenersForSquare(newSquare->GetLocation());
+	/* IObservableSquareObservor methods */
+	void Board::SquareDidChange(const Location& location, const IObservableSquare::Event& event)
+	{
+
 	}
 
 	/* IObservableBoard methods */
-	void Board::AddListener(IObservableBoardObservor &observor)
+	void Board::AddListener(IObservableBoardObservor* observor, const IObservableSquare::Event& event)
 	{
 		Location::for_each([&](const Location& location) {
-			this->AddListenerForSquare(observor, location);
+			AddListenerForSquare(observor, location, event);
 		});
 	}
 
-	void Board::AddListenerForSquare(IObservableBoardObservor &observor, const Location& location)
+	void Board::AddListenerForSquare(IObservableBoardObservor* observor, const Location& location, const IObservableSquare::Event& event)
 	{
-		auto& listeners = GetListenerListForSquare(location);
-		for(IObservableBoardObservor* existingObservor : listeners)
-			if(existingObservor == &observor)
+		auto& observors = squareObservors[location];
+		auto observorTuple = make_tuple(observor, event);
+		for(auto& existingObservorTuple : observors)
+			if(existingObservorTuple == observorTuple)
 				return;
-		listeners.push_back(&observor);
+
+		observors.push_back(observorTuple);
 	}
 	
-	void Board::RemoveListener(IObservableBoardObservor &observor)
+	void Board::RemoveListener(IObservableBoardObservor* observor, const IObservableSquare::Event& event)
 	{
-
+		Location::for_each([&](const Location& location) {
+			RemoveListenerForSquare(observor, location, event);
+		});
 	}
 	
-	void Board::RemoveListenerForSquare(IObservableBoardObservor &observor, const Location& location)
+	void Board::RemoveListenerForSquare(IObservableBoardObservor* observor, const Location& location, const IObservableSquare::Event& event)
 	{
-
+		auto& observors = squareObservors[location];
+		auto observorTuple = make_tuple(observor, event);
+		auto itr = find(observors.begin(), observors.end(), observorTuple);
+		if(itr != observors.end())
+			observors.erase(itr);
 	}
-
 
 	/* Private Methods */
 
-	shared_ptr<ISquare> Board::GetSquareAtLocation(const Location& location) const
+	shared_ptr<IObservableSquare> Board::GetSquareAtLocation(const Location& location) const
 	{
 		return squares[static_cast<int>(location) - static_cast<int>(Location::a8)];
 	}
 
-	ISquare& Board::UseSquareAtLocation(const Location& location) const
+	IObservableSquare& Board::UseSquareAtLocation(const Location& location) const
 	{
 		return *(GetSquareAtLocation(location));
-	}
-
-	std::vector<IObservableBoardObservor*>& Board::GetListenerListForSquare(const Location& location)
-	{
-		return squareListeners[location];
-	}
-
-	void Board::NotifyListenersForSquare(const Location& location)
-	{
-		for(IObservableBoardObservor* observor : GetListenerListForSquare(location))
-			observor->SquareDidChange(*this, location);
 	}
 }

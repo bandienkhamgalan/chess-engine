@@ -6,8 +6,8 @@
 #include "Location.hpp"
 #include "Player.hpp"
 #include "mocks/Piece.hpp"
-#include "mocks/SquareFactory.hpp"
-#include "mocks/Square.hpp"
+#include "mocks/ObservableSquare.hpp"
+#include "mocks/ObservableSquareFactory.hpp"
 
 using namespace std;
 using namespace Chess;
@@ -21,12 +21,12 @@ using testing::_;
 
 TEST(Board_Constructor, InitializesSquares)
 {
-	Mocks::SquareFactory squareFactory;
+	NiceMock<Mocks::ObservableSquareFactory> squareFactory;
 	Location::for_each( [&](Location current)
 	{
 		EXPECT_CALL(squareFactory, makeSquare(current))
 			.Times(1)
-			.WillOnce(Return(ByMove(unique_ptr<ISquare>(nullptr))));
+			.WillOnce(Return(ByMove(unique_ptr<IObservableSquare>(nullptr))));
 	});
 	Board board(squareFactory);
 };
@@ -35,8 +35,8 @@ class Board_
 	: public testing::Test
 {
 public:
-	NiceMock<Mocks::SquareFactory> squareFactory;
-	std::map<Location, NiceMock<Mocks::Square>*> squares;
+	NiceMock<Mocks::ObservableSquareFactory> squareFactory;
+	std::map<Location, NiceMock<Mocks::ObservableSquare>*> squares;
 	Board board;
 
 	Board_()
@@ -55,15 +55,15 @@ public:
 		
 	}
 	*/
-	NiceMock<Mocks::SquareFactory>& prepareFactory()
+	NiceMock<Mocks::ObservableSquareFactory>& prepareFactory()
 	{
 		ON_CALL(squareFactory, makeSquare(_))
 			.WillByDefault(Invoke([&](const Location& location) {
-				NiceMock<Mocks::Square>* square = new NiceMock<Mocks::Square>();
+				auto square = new NiceMock<Mocks::ObservableSquare>();
 				ON_CALL(*square, GetLocation())
 					.WillByDefault(ReturnRef(location));
 				squares[location] = square;
-				return unique_ptr<ISquare>(square);
+				return unique_ptr<IObservableSquare>(square);
 			}));
 		return squareFactory;
 	}
@@ -221,14 +221,5 @@ TEST_F(Board_MovePieceToLocation_PieceRegistered, DestinationEmpty_Success)
 	EXPECT_CALL(*piece, SetLocation(SharedPointerAddressEq(squares[destination])))
 		.Times(1);
 
-	try
-	{	
-		board.MovePieceToLocation(piece, destination);
-	}
-	catch(const std::exception &e) {
-	    cout << e.what();
-	}
-	catch(...) {
-	    cout << "unknown exception";
-	}
+	board.MovePieceToLocation(piece, destination);
 }

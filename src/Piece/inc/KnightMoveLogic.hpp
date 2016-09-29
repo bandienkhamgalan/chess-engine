@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
 #include "IObservableBoardObservor.hpp"
+#include "IObservableBoard.hpp"
 #include "IPieceMoveLogic.hpp"
 #include "IPiece.hpp"
-#include "IObservableBoard.hpp"
 
 namespace Chess
 {

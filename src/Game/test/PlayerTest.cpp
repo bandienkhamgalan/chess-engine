@@ -3,7 +3,6 @@
 #include "gtest/gtest.h"
 #include "Player.hpp"
 #include "Location.hpp"
-#include "mocks/SquareFactory.hpp"
 #include "mocks/Piece.hpp"
 
 using namespace std;

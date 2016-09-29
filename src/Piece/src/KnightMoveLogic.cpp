@@ -1,4 +1,5 @@
 #include "KnightMoveLogic.hpp"
+#include "IObservableSquare.hpp"
 #include <stdexcept>
 
 namespace Chess
@@ -24,7 +25,7 @@ namespace Chess
 	KnightMoveLogic::~KnightMoveLogic()
 	{
 		if(!board.expired())
-			board.lock()->RemoveListener(*this);
+			UnregisterListeners();
 	}
 
 	/* Public methods */
@@ -89,11 +90,13 @@ namespace Chess
 	{
 		auto boardPtr = board.lock();
 		for(Location location : validMoves)
-			boardPtr->AddListenerForSquare(*this, location);
+			boardPtr->AddListenerForSquare(this, location, IObservableSquare::OccupantChanged);
 	}
 
 	void KnightMoveLogic::UnregisterListeners()
 	{
-		board.lock()->RemoveListener(*this);
+		auto boardPtr = board.lock();
+		for(Location location : validMoves)
+			boardPtr->RemoveListenerForSquare(this, location, IObservableSquare::OccupantChanged);
 	}
 }
